@@ -1,8 +1,10 @@
 package com.company;
-import com.company.Game.GameMainView;
+
+import com.company.Game.MainViewController;
 
 public class Main {
     public static void main(String[] args){
-        GameMainView gameMainView = GameMainView.createAndShowView(700, 600);
+        MainViewController mainViewController = MainViewController.create();
+        mainViewController.start();
     }
 }
