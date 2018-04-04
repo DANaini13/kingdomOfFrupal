@@ -28,19 +28,21 @@ public class GameView extends Panel implements KeyListener {
         this.setBounds(x, y, w, h);
         this.width = 20;
         this.height = 20;
+        this.setBackground(Color.gray);
         initSubviews();
         addKeyListener(this);
     }
 
     private void initSubviews() {
         this.lines = new JLabel[this.width][this.height];
-        int height = this.getBounds().height / 20;
-        int width  = this.getBounds().width / 20;
-        for (int i=0; i<20; ++i) {
-            for (int j=0; j<20; ++j) {
+        int height = this.getBounds().height / (this.height + 1);
+        int width  = this.getBounds().width / this.width;
+        for (int i=0; i<this.width; ++i) {
+            for (int j=0; j<this.height; ++j) {
                 lines[i][j] = new JLabel(" ");
                 lines[i][j].setBackground(Color.CYAN);
-                lines[i][j].setBounds(i * height, j * width, width, height);
+                float y = ((float)j + (float)j/(float)this.height) * (float)height;
+                lines[i][j].setBounds(i * width, (int)y, width, height);
                 this.add(lines[i][j]);
             }
         }
@@ -69,9 +71,28 @@ public class GameView extends Panel implements KeyListener {
     }
 
     public void moveGameRoleWithXY(int x, int y) {
+        if (x < 0 || x >= this.width || y < 0 || y >= this.height)
+            return;
+        lines[this.gameRole[0]][this.gameRole[1]].setText(" ");
         this.gameRole[0] = x;
         this.gameRole[1] = y;
         lines[x][y].setText(String.valueOf(this.gameRoleChar));
+    }
+
+    public void moveRoleUp() {
+        this.moveGameRoleWithXY(this.gameRole[0], this.gameRole[1] - 1);
+    }
+
+    public void moveRoleLeft() {
+        this.moveGameRoleWithXY(this.gameRole[0] - 1, this.gameRole[1]);
+    }
+
+    public void moveRoleDown() {
+        this.moveGameRoleWithXY(this.gameRole[0], this.gameRole[1] + 1);
+    }
+
+    public void moveRoleRight() {
+        this.moveGameRoleWithXY(this.gameRole[0] + 1, this.gameRole[1]);
     }
 
     public void setUpKeyAction(KeyAction keyAction) {

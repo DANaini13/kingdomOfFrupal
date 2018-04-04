@@ -23,10 +23,10 @@ public class GameViewController {
         this.gameView.setUpGameRoleWithXY(5, 5);
         this.gameView.setUpKeyAction(keyEvent -> {
             switch (keyEvent.getKeyCode()) {
-                case KeyEvent.VK_UP: System.out.println("up"); break;
-                case KeyEvent.VK_LEFT: System.out.println("left");break;
-                case KeyEvent.VK_DOWN: System.out.println("down");break;
-                case KeyEvent.VK_RIGHT: System.out.println("right");break;
+                case KeyEvent.VK_UP: gameView.moveRoleUp(); break;
+                case KeyEvent.VK_LEFT: gameView.moveRoleLeft(); break;
+                case KeyEvent.VK_DOWN: gameView.moveRoleDown(); break;
+                case KeyEvent.VK_RIGHT: gameView.moveRoleRight(); break;
             }
         });
     }
