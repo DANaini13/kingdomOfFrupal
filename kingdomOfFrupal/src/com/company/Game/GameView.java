@@ -8,26 +8,28 @@ interface KeyAction{
     void keyAction(KeyEvent event);
 }
 
+
 public class GameView extends Panel implements KeyListener {
 
     private JLabel lines[][];
-    public final int width;
-    public final int height;
     private int gameRole[];
     private KeyAction keyAction;
-
     private final char gameRoleChar = '@';
+    private StaticGameItem gameMap[][] = null;
 
-    static public GameView createWithBound(int x, int y, int w, int h) {
-        GameView gameView = new GameView(x, y, w, h);
+    public final int width;
+    public final int height;
+
+    static public GameView createWithBound(int x, int y, int w, int h, int mapWidth, int mapHeight) {
+        GameView gameView = new GameView(x, y, w, h, mapWidth, mapHeight);
         gameView.setLayout(null);
         return gameView;
     }
 
-    private GameView(int x, int y, int w, int h) {
+    private GameView(int x, int y, int w, int h, int mapWidth, int mapHeight) {
         this.setBounds(x, y, w, h);
-        this.width = 20;
-        this.height = 20;
+        this.width = mapWidth;
+        this.height = mapHeight;
         this.setBackground(Color.gray);
         initSubviews();
         addKeyListener(this);
@@ -35,32 +37,43 @@ public class GameView extends Panel implements KeyListener {
 
     private void initSubviews() {
         this.lines = new JLabel[this.width][this.height];
-        int height = this.getBounds().height / (this.height + 1);
-        int width  = this.getBounds().width / this.width;
+        float height = this.getBounds().height / this.height;
+        float width  = this.getBounds().width / this.width;
         for (int i=0; i<this.width; ++i) {
             for (int j=0; j<this.height; ++j) {
-                lines[i][j] = new JLabel(" ");
+                lines[i][j] = new JLabel("*");
                 lines[i][j].setBackground(Color.CYAN);
-                float y = ((float)j + (float)j/(float)this.height) * (float)height;
-                lines[i][j].setBounds(i * width, (int)y, width, height);
+                float y = (float)j * height;
+                float x = (float)i * width;
+                lines[i][j].setBounds((int)x, (int)y, (int)width, (int)height);
                 this.add(lines[i][j]);
             }
         }
         this.keyAction = null;
     }
 
-    private void outputToXY(int x, int y, char content) {
+    public void outputToXY(int x, int y, char content) {
         if (x < 0 || x >= this.width || y < 0 || y >= this.height)
             return;
         lines[x][y].setText(String.valueOf(content));
     }
 
-    private void outputToXY(int x, int y, String content) {
+    public void outputToXY(int x, int y, String content) {
         if (x < 0 || x + content.length() >= this.width || y < 0 || y >= this.height)
             return;
         char sequence[] = content.toCharArray();
         for(int i=0; i<content.length(); ++i)
             lines[x + i][y].setText(String.valueOf(sequence[i]));
+    }
+
+    public void outputToXYWithColor(int x, int y, String content, Color color) {
+       if (x < 0 || x + content.length() >= this.width || y < 0 || y >= this.height)
+            return;
+        char sequence[] = content.toCharArray();
+        for(int i=0; i<content.length(); ++i) {
+            lines[x + i][y].setForeground(color);
+            lines[x + i][y].setText(String.valueOf(sequence[i]));
+        }
     }
 
     public void setUpGameRoleWithXY(int x, int y) {
@@ -70,29 +83,51 @@ public class GameView extends Panel implements KeyListener {
         lines[x][y].setText(String.valueOf(this.gameRoleChar));
     }
 
-    public void moveGameRoleWithXY(int x, int y) {
+    public boolean moveGameRoleWithXY(int x, int y) {
         if (x < 0 || x >= this.width || y < 0 || y >= this.height)
-            return;
-        lines[this.gameRole[0]][this.gameRole[1]].setText(" ");
+            return false;
         this.gameRole[0] = x;
         this.gameRole[1] = y;
         lines[x][y].setText(String.valueOf(this.gameRoleChar));
+        return true;
     }
 
-    public void moveRoleUp() {
-        this.moveGameRoleWithXY(this.gameRole[0], this.gameRole[1] - 1);
+    public void updateMapWithGameItems(StaticGameItem gameItems[][]) {
+        int height = gameItems.length;
+        if(height != this.height)
+            return;
+        int width = gameItems[0].length;
+        if(width != this.width)
+            return;
+        this.gameMap = gameItems;
     }
 
-    public void moveRoleLeft() {
-        this.moveGameRoleWithXY(this.gameRole[0] - 1, this.gameRole[1]);
-    }
-
-    public void moveRoleDown() {
-        this.moveGameRoleWithXY(this.gameRole[0], this.gameRole[1] + 1);
-    }
-
-    public void moveRoleRight() {
-        this.moveGameRoleWithXY(this.gameRole[0] + 1, this.gameRole[1]);
+    public void render() {
+        if(this.gameMap == null)
+            return;
+        for(int i=0; i<width; ++i) {
+            for(int j=0; j<height; ++j) {
+                if(i == this.gameRole[0] && j == this.gameRole[1])
+                    continue;
+                switch (this.gameMap[i][j].type) {
+                    case "empty":
+                        if(!this.gameMap[i][j].visiable)
+                            this.lines[i][j].setText("*");
+                        else
+                            this.lines[i][j].setText(" ");
+                        break;
+                    case "tree":
+                        if(this.gameMap[i][j].visiable)
+                            this.lines[i][j].setText("T");
+                        break;
+                    case "boulder":
+                        if(this.gameMap[i][j].visiable)
+                            this.lines[i][j].setText("B");
+                        break;
+                    default:break;
+                }
+            }
+        }
     }
 
     public void setUpKeyAction(KeyAction keyAction) {
