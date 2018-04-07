@@ -16,7 +16,7 @@ public class MainViewController {
         this.gameMainView.add(this.gameView);
         this.gameView.setFocusable(true);
         this.gameView.requestFocus();
-        this.gameStatusView = GameStatusView.create(210, 0, 200, 20);
+        this.gameStatusView = GameStatusView.create(210, 0, 200, 60);
         this.gameMainView.add(this.gameStatusView);
     }
 
@@ -27,8 +27,10 @@ public class MainViewController {
 
     public void start() {
         GameViewController gameViewController = GameViewController.createWithGameView(this.gameView);
-        gameViewController.setEnergyChangeHandler(newEnergy -> {
+        gameViewController.setEnergyChangeHandler((newEnergy, newWealth, x, y) -> {
             this.gameStatusView.setEnergy(newEnergy);
+            this.gameStatusView.setWealth(newWealth);
+            this.gameStatusView.setLocation(x, y);
         });
         gameViewController.start();
     }

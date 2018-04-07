@@ -42,7 +42,6 @@ public class GameView extends Panel implements KeyListener {
         for (int i=0; i<this.width; ++i) {
             for (int j=0; j<this.height; ++j) {
                 lines[i][j] = new JLabel("*");
-                lines[i][j].setBackground(Color.CYAN);
                 float y = (float)j * height;
                 float x = (float)i * width;
                 lines[i][j].setBounds((int)x, (int)y, (int)width, (int)height);
@@ -111,18 +110,26 @@ public class GameView extends Panel implements KeyListener {
                     continue;
                 switch (this.gameMap[i][j].type) {
                     case "empty":
-                        if(!this.gameMap[i][j].visiable)
+                        if(!this.gameMap[i][j].visiable) {
                             this.lines[i][j].setText("*");
-                        else
-                            this.lines[i][j].setText(" ");
+                            this.lines[i][j].setForeground(Color.BLACK);
+                        }
+                        else {
+                            this.lines[i][j].setText("*");
+                            this.lines[i][j].setForeground(Color.CYAN);
+                        }
                         break;
                     case "tree":
-                        if(this.gameMap[i][j].visiable)
+                        if(this.gameMap[i][j].visiable) {
                             this.lines[i][j].setText("T");
+                            this.lines[i][j].setForeground(Color.RED);
+                        }
                         break;
                     case "boulder":
-                        if(this.gameMap[i][j].visiable)
+                        if(this.gameMap[i][j].visiable) {
                             this.lines[i][j].setText("B");
+                            this.lines[i][j].setForeground(Color.RED);
+                        }
                         break;
                     default:break;
                 }

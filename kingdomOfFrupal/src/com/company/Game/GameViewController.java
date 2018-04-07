@@ -3,8 +3,8 @@ package com.company.Game;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-interface EnergyChangeAction{
-    void action(int newEnergy);
+interface StatusChangeAction {
+    void action(int newEnergy, int newWealth, int x, int y);
 }
 
 public class GameViewController {
@@ -17,7 +17,7 @@ public class GameViewController {
     private int gameRole[];
     private int energyLeft;
     private boolean gameOver;
-    private EnergyChangeAction energyChangeAction;
+    private StatusChangeAction energyChangeAction;
 
     private GameViewController(GameView gameView) {
         this.gameRole = new int[2];
@@ -73,7 +73,7 @@ public class GameViewController {
             performItemEffect(gameMap[this.gameRole[0]][this.gameRole[1]]);
             gameView.render();
             if(this.energyChangeAction != null)
-                this.energyChangeAction.action(this.energyLeft);
+                this.energyChangeAction.action(this.energyLeft, 100, this.gameRole[0], this.gameRole[1]);
             if(this.energyLeft <= 0) {
                 gameView.outputToXYWithColor(5, 10, "GAME OVER!", Color.RED);
                 this.gameOver = true;
@@ -89,7 +89,7 @@ public class GameViewController {
         System.out.println(this.energyLeft);
     }
 
-    public void setEnergyChangeHandler(EnergyChangeAction action) {
+    public void setEnergyChangeHandler(StatusChangeAction action) {
         this.energyChangeAction = action;
     }
 }
