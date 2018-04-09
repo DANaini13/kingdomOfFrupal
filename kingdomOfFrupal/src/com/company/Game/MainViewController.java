@@ -12,7 +12,7 @@ public class MainViewController {
 
     private void initSubviews(){
         this.gameMainView = GameMainView.createAndShowView(700);
-        this.gameView = GameView.createWithBound(210, 75, 500, 500, 20, 20);
+        this.gameView = GameView.createWithBound(210, 75, 500, 500);
         this.gameMainView.add(this.gameView);
         this.gameView.setFocusable(true);
         this.gameView.requestFocus();

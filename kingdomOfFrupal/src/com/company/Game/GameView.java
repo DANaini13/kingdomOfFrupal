@@ -1,4 +1,5 @@
 package com.company.Game;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -17,25 +18,27 @@ public class GameView extends Panel implements KeyListener {
     private final char gameRoleChar = '@';
     private StaticGameItem gameMap[][] = null;
 
-    public final int width;
-    public final int height;
+    public int width;
+    public int height;
 
-    static public GameView createWithBound(int x, int y, int w, int h, int mapWidth, int mapHeight) {
-        GameView gameView = new GameView(x, y, w, h, mapWidth, mapHeight);
+    static public GameView createWithBound(int x, int y, int w, int h) {
+        GameView gameView = new GameView(x, y, w, h);
         gameView.setLayout(null);
         return gameView;
     }
 
-    private GameView(int x, int y, int w, int h, int mapWidth, int mapHeight) {
+    private GameView(int x, int y, int w, int h) {
         this.setBounds(x, y, w, h);
-        this.width = mapWidth;
-        this.height = mapHeight;
-        this.setBackground(Color.gray);
+        this.setBackground(Color.LIGHT_GRAY);
+        this.width = 20;
+        this.height = 20;
         initSubviews();
         addKeyListener(this);
     }
 
-    private void initSubviews() {
+    public void prepareForNewMap(int w, int h) {
+        this.width = w;
+        this.height = h;
         this.lines = new JLabel[this.width][this.height];
         float height = this.getBounds().height / this.height;
         float width  = this.getBounds().width / this.width;
@@ -48,6 +51,9 @@ public class GameView extends Panel implements KeyListener {
                 this.add(lines[i][j]);
             }
         }
+    }
+
+    private void initSubviews() {
         this.keyAction = null;
     }
 
@@ -106,32 +112,73 @@ public class GameView extends Panel implements KeyListener {
             return;
         for(int i=0; i<width; ++i) {
             for(int j=0; j<height; ++j) {
-                if(i == this.gameRole[0] && j == this.gameRole[1])
+                if(i == this.gameRole[0] && j == this.gameRole[1]){
+                    this.lines[i][j].setForeground(Color.BLACK);
                     continue;
+                }
                 switch (this.gameMap[i][j].type) {
-                    case "empty":
-                        if(!this.gameMap[i][j].visiable) {
-                            this.lines[i][j].setText("*");
-                            this.lines[i][j].setForeground(Color.BLACK);
-                        }
-                        else {
-                            this.lines[i][j].setText("*");
-                            this.lines[i][j].setForeground(Color.CYAN);
-                        }
+                    case "water": {
+                        this.lines[i][j].setForeground(Color.BLUE);
                         break;
-                    case "tree":
-                        if(this.gameMap[i][j].visiable) {
-                            this.lines[i][j].setText("T");
-                            this.lines[i][j].setForeground(Color.RED);
-                        }
+                    }
+                    case "meadow": {
+                        this.lines[i][j].setForeground(Color.DARK_GRAY);
                         break;
-                    case "boulder":
-                        if(this.gameMap[i][j].visiable) {
+                    }
+                    case "forest": {
+                        this.lines[i][j].setForeground(Color.GREEN);
+                        break;
+                    }
+                    case "wall": {
+                        this.lines[i][j].setForeground(Color.YELLOW);
+                        break;
+                    }
+                }
+                if(!this.gameMap[i][j].visiable) {
+                    this.lines[i][j].setForeground(Color.GRAY);
+                }
+                switch (this.gameMap[i][j].name) {
+                    case "None":
+                        this.lines[i][j].setText("*");
+                        break;
+                    case "Tree":
+                        if(this.gameMap[i][j].visiable)
+                            this.lines[i][j].setText("木");
+                        else
+                            this.lines[i][j].setText("*");
+                        break;
+                    case "Boulder":
+                        if(this.gameMap[i][j].visiable)
+                            this.lines[i][j].setText("■");
+                        else
+                            this.lines[i][j].setText("*");
+                        break;
+                    case "Blackberry":
+                        if(this.gameMap[i][j].visiable)
                             this.lines[i][j].setText("B");
-                            this.lines[i][j].setForeground(Color.RED);
-                        }
+                        else
+                            this.lines[i][j].setText("*");
                         break;
-                    default:break;
+                    case "Bushes":
+                        if(this.gameMap[i][j].visiable)
+                            this.lines[i][j].setText("丛");
+                        else
+                            this.lines[i][j].setText("*");
+                        break;
+                    case "PowerBar":
+                        if(this.gameMap[i][j].visiable)
+                            this.lines[i][j].setText("=");
+                        else
+                            this.lines[i][j].setText("*");
+                        break;
+                    case "Chest":
+                        if(this.gameMap[i][j].visiable)
+                            this.lines[i][j].setText("=");
+                        else
+                            this.lines[i][j].setText("||");
+                        break;
+                    default:
+                        this.lines[i][j].setText("*");
                 }
             }
         }
