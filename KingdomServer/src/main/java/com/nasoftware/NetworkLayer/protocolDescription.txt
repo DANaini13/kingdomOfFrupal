@@ -1,0 +1,28 @@
+
+##########################CGI#########################
+Login {
+    command : 1
+    account : accountName
+}
+LoginResponse {
+    command : 1
+    result  : success | fail reason
+}
+
+
+PlayOperation {
+    command : 2
+    account : accountName
+    operation : 0 | 1 | 2 | 3   #up | left | down | right
+}
+
+CloseConnection: close
+##########################CGI#########################
+
+##########################PUSH########################
+SyncStatus {
+    command : 3
+    account : accountName
+
+}
+##########################PUSH########################
