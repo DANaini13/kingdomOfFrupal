@@ -1,0 +1,52 @@
+
+##########################CGI#########################
+Login {
+    command : login
+    account : accountName
+}
+LoginResponse {
+    command : login
+    error   : 0 | fail reason
+}
+
+
+PlayOperation {
+    command : move
+    operation : up | left | down | right
+}
+
+##########################PUSH########################
+SyncStatus {
+    command : syncStatus
+    playerList:[
+        player:{
+            x: x
+            y: y
+            energy: number
+            wealth: number
+            tools:[
+                tool1,
+                tool2,
+                tool3,
+                tool4
+                ....
+            ]
+        },
+        ....
+    ]
+    map[
+        block{
+            x: x
+            y: y
+            visible: 0 | 1
+            type: example
+            name: example
+        },
+        block {
+
+        }
+        ....
+    ]
+    mapWidth:25
+}
+##########################PUSH########################
