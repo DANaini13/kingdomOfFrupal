@@ -30,6 +30,7 @@ public class NetworkService {
                 response = packetBuffer.get(args.get("command").toString());
             }
             handler.response(response);
+            System.out.println("take out packet" + response);
             packetBuffer.put(args.get("command").toString(), null);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -52,6 +53,7 @@ public class NetworkService {
                 if(response != null) {
                     handler.response(response);
                     packetBuffer.put(command, null);
+                    System.out.println("take out packet" + response);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

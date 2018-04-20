@@ -27,7 +27,9 @@ public class PlayerService {
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("command", "login");
-            if(userList.contains(account)) {
+            Player temp = new Player();
+            temp.account = account;
+            if(userList.contains(temp)) {
                 jsonObject.put("error", "the account already exist!");
                 handler.response(jsonObject);
                 return;
@@ -41,6 +43,8 @@ public class PlayerService {
             jsonObject.put("error", 0);
             handler.response(jsonObject);
             move(account, "nothing");
+            System.out.println("new Person login!");
+            System.out.println(playerManager.getPlayerList());
         } catch (JSONException e) {
             e.printStackTrace();
         }
