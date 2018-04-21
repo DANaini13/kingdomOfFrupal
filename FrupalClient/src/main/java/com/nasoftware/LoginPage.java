@@ -1,8 +1,9 @@
 package com.nasoftware;
 
-import com.nasoftware.GameLayer.GameViewController;
 import com.nasoftware.LogicLayer.AccountService;
+import com.nasoftware.NetworkLayer.CompletionHandler;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -60,7 +61,6 @@ public class LoginPage extends JPanel {
                     try {
                         if(response.getInt("error") == 0) {
                             currentFrame.dispose();
-                            GameViewController gameViewController = GameViewController.getGameViewController();
                         }
 
                     } catch (JSONException e1) {
@@ -76,4 +76,5 @@ public class LoginPage extends JPanel {
         });
         this.add(logInButton);
     }
+
 }
