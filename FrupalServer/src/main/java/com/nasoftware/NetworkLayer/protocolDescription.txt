@@ -20,6 +20,7 @@ SyncStatus {
     command : syncStatus
     playerList:[
         player:{
+            name:what ever
             x: x
             y: y
             energy: number
@@ -48,5 +49,10 @@ SyncStatus {
         ....
     ]
     mapWidth:25
+}
+
+newPlayerComing {
+    command: newPlayer
+    name: what ever
 }
 ##########################PUSH########################

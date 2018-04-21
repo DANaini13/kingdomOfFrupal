@@ -45,6 +45,11 @@ public class PlayerService {
             move(account, "nothing");
             System.out.println("new Person login!");
             System.out.println(playerManager.getPlayerList());
+            JSONObject jsonObject1 = new JSONObject();
+            jsonObject1.put("command", "newPlayer");
+            jsonObject1.put("name", account);
+            ServerManager serverManager = ServerManager.getServerManager(2022);
+            serverManager.sendNotifications(jsonObject1);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -121,6 +126,7 @@ public class PlayerService {
                 player.put("energy", next.energy);
                 player.put("wealth", next.wealth);
                 player.put("tools", next.toolList);
+                player.put("name", next.account);
                 userList.add(player);
             }
             result.put("playerList", userList);

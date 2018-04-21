@@ -1,6 +1,7 @@
 package com.nasoftware.GameLayer;
 import com.nasoftware.LogicLayer.GameStatusService;
 import com.nasoftware.LogicLayer.MovementService;
+import com.nasoftware.NetworkLayer.CompletionHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +29,11 @@ public class GameViewController extends JPanel implements KeyListener {
             gameView.setBackground(Color.lightGray);
             frame.add(gameView);
 
+            GameAlertView gameAlertView = GameAlertView.getGameAlertView();
+            gameAlertView.setBounds(180, 120, 500, 30);
+            gameAlertView.setLayout(null);
+            frame.add(gameAlertView);
+
             gameViewController.setFocusable(true);
             gameViewController.requestFocus();
             gameViewController.addKeyListener(gameViewController);
@@ -35,7 +41,7 @@ public class GameViewController extends JPanel implements KeyListener {
 
             StatusView statusView = new StatusView();
             statusView.setLayout(null);
-            statusView.setBounds(180, 0, 500, 160);
+            statusView.setBounds(180, 0, 500, 120);
             frame.add(statusView);
 
             GameStatusService gameStatusService = GameStatusService.getGameStatusService();
@@ -49,6 +55,7 @@ public class GameViewController extends JPanel implements KeyListener {
                         player.y = jsonObject.getInt("y");
                         player.energy = Integer.parseInt(jsonObject.get("energy").toString());
                         player.wealth = Integer.parseInt(jsonObject.get("wealth").toString());
+                        player.account = jsonObject.getString("name");
                         JSONArray tools = jsonObject.getJSONArray("tools");
                         for (int j=0; j<tools.length(); ++j) {
                             player.toolList.add(tools.getString(j));
@@ -77,8 +84,15 @@ public class GameViewController extends JPanel implements KeyListener {
                         gameItem[x][y].visiable = item.getInt("visible") == 1;
                     }
                     gameView.render(gameItem, mapWidth, gameViewController.getPlayers());
-                    statusView.render(gameViewController.getPlayers().getFirst());
+                    statusView.render(gameViewController.getPlayers());
                     gameViewController.cleanPlayers();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            });
+            gameStatusService.setNewPlayerAlertHandler((response) -> {
+                try {
+                    gameAlertView.alert("welcome " + response.getString("name") + " come into the room!!!");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

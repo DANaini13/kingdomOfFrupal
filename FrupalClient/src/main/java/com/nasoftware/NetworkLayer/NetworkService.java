@@ -5,6 +5,40 @@ import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+class SyncChecker extends Thread
+{
+    private HashMap<String, JSONObject> source;
+    private String command;
+    private CompletionHandler handler;
+    private Lock lock;
+
+    SyncChecker(HashMap<String, JSONObject> source, String command, CompletionHandler handler, Lock lock) {
+        this.source = source;
+        this.command = command;
+        this.handler = handler;
+        this.lock = lock;
+    }
+
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(100);
+                lock.lock();
+                JSONObject response = source.get(command);
+                if(response != null) {
+                    handler.response(response);
+                    source.put(command, null);
+                    System.out.println("take out packet" + response);
+                }
+                lock.unlock();
+            } catch (InterruptedException e) {
+                lock.unlock();
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
 public class NetworkService {
     static private NetworkService networkService = null;
     static public NetworkService getNetworkService() {
@@ -16,6 +50,7 @@ public class NetworkService {
     }
 
     private HashMap<String, JSONObject> packetBuffer = new HashMap<>();
+    private HashMap<String, Integer> syncRequestBuffer = new HashMap<>();
     private Lock lock = new ReentrantLock();
 
     public void CGIRequest(JSONObject args, CompletionHandler handler) {
@@ -44,22 +79,12 @@ public class NetworkService {
         socketService.SendPacket(args);
     }
 
-    public void SetSnycRequest(String command, CompletionHandler handler) {
-        JSONObject response = packetBuffer.get(command);
-        while (true) {
-            try {
-                Thread.sleep(100);
-                response = packetBuffer.get(command);
-                if(response != null) {
-                    handler.response(response);
-                    packetBuffer.put(command, null);
-                    System.out.println("take out packet" + response);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            response = packetBuffer.get(command);
-        }
+    public void SetSyncRequest(String command, CompletionHandler handler) {
+        if(syncRequestBuffer.containsKey(command))
+            return;
+        SyncChecker syncChecker = new SyncChecker(packetBuffer, command, handler, lock);
+        syncChecker.start();
+        syncRequestBuffer.put(command, 1);
     }
 
     private void setReceiveService() {

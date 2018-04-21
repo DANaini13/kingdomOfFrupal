@@ -14,6 +14,11 @@ public class GameStatusService {
 
     public void setStatusSyncHandler(CompletionHandler handler) {
         NetworkService networkService = NetworkService.getNetworkService();
-        networkService.SetSnycRequest("syncStatus", handler);
+        networkService.SetSyncRequest("syncStatus", handler);
+    }
+
+    public void setNewPlayerAlertHandler(CompletionHandler handler) {
+        NetworkService networkService = NetworkService.getNetworkService();
+        networkService.SetSyncRequest("newPlayer", handler);
     }
 }
