@@ -53,6 +53,7 @@ public class GameViewController extends JPanel implements KeyListener {
                         JSONObject jsonObject = playList.getJSONObject(i);
                         player.x = jsonObject.getInt("x");
                         player.y = jsonObject.getInt("y");
+                        player.direction = jsonObject.getInt("direction");
                         player.energy = Integer.parseInt(jsonObject.get("energy").toString());
                         player.wealth = Integer.parseInt(jsonObject.get("wealth").toString());
                         player.account = jsonObject.getString("name");

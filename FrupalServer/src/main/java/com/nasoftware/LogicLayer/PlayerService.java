@@ -74,15 +74,19 @@ public class PlayerService {
         switch (direction) {
             case "up":
                 y -= 1;
+                playerManager.resetDirection(account, 0);
                 break;
             case "down":
                 y += 1;
+                playerManager.resetDirection(account, 2);
                 break;
             case "left":
                 x -= 1;
+                playerManager.resetDirection(account, 3);
                 break;
             case "right":
                 x += 1;
+                playerManager.resetDirection(account, 1);
                 break;
             default:
                 break;
@@ -123,6 +127,7 @@ public class PlayerService {
                 JSONObject player = new JSONObject();
                 player.put("x", next.x);
                 player.put("y", next.y);
+                player.put("direction", next.direction);
                 player.put("energy", next.energy);
                 player.put("wealth", next.wealth);
                 player.put("tools", next.toolList);
@@ -136,8 +141,6 @@ public class PlayerService {
             for(int i=0; i<mapWidth; ++i) {
                 for(int j=0; j<mapWidth; ++j) {
                     GameItem item = gameItems[i][j];
-                    if(item.name.equals("None") && item.type.equals("meadow"))
-                        continue;
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("x", i);
                     jsonObject.put("y", j);

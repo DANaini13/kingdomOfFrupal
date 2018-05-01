@@ -20,8 +20,12 @@ public class PlayerManager {
     public void addPlayer(String account) {
         lock.lock();
         Player player = new Player();
-        player.x = 1;
-        player.y = 1;
+        switch (playerList.size()) {
+            case 0: player.x = 1; player.y = 1; break;
+            case 1: player.x = 20; player.y = 1; break;
+            case 2: player.x = 1; player.y = 23; break;
+            case 3: player.x = 23; player.y = 23; break;
+        }
         player.account = account;
         playerList.add(player);
         lock.unlock();
@@ -53,6 +57,21 @@ public class PlayerManager {
             if(next.equals(player)) {
                 next.x = x;
                 next.y = y;
+                break;
+            }
+        }
+        lock.unlock();
+    }
+
+    public void resetDirection(String account, int direction) {
+        lock.lock();
+        Player player = new Player();
+        player.account = account;
+        Iterator it = playerList.iterator();
+        while (it.hasNext()) {
+            Player next = (Player) it.next();
+            if(next.equals(player)) {
+                next.direction = direction;
                 break;
             }
         }

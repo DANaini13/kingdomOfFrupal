@@ -7,6 +7,7 @@ public class Player {
     public int y = 0;
     public int energy = 100;
     public int wealth = 100;
+    public int direction = 0; // 0 up, 1 right, 2 down, 3 left
     public LinkedList<String> toolList = new LinkedList<>();
 
     @Override

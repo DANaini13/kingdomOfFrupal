@@ -1,5 +1,4 @@
 package com.nasoftware.GameLayer;
-import com.nasoftware.NetworkLayer.CompletionHandler;
 
 import javax.swing.*;
 import java.awt.*;

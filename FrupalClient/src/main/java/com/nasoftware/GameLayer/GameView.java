@@ -53,16 +53,12 @@ public class GameView extends JPanel {
                         case "desert": image = ImageIO.read(new File("Resources/desert.png")); break;
                         case "wall": image = ImageIO.read(new File("Resources/wall.png")); break;
                         case "forest": image = ImageIO.read(new File("Resources/forest.png")); break;
-                        case "meadow":
-                            if(map[x][y].name.equals("None"))
-                                continue;
-                            break;
-                        default:System.out.println("shit");
+                        case "meadow": image = ImageIO.read(new File("Resources/grass.png")); break;
                     }
                     switch (map[x][y].name) {
                         case "Boulder": image = ImageIO.read(new File("Resources/boulder.png")); break;
-                        case "Tree": image = ImageIO.read(new File("Resources/tree.png")); break;
-                        case "Blackberry": image = ImageIO.read(new File("Resources/blackberry.png")); break;
+                        case "Tree": image = ImageIO.read(new File("Resources/tallTree.png")); break;
+                        case "Blackberry": image = ImageIO.read(new File("Resources/tree.png")); break;
                     }
                     JLabel picLabel = new JLabel(new ImageIcon(image));
                     picLabel.setBounds(x*width, y*width, width, width);
@@ -87,7 +83,15 @@ public class GameView extends JPanel {
                 map[player.x + 1][player.y].visiable = true;
                 int x = player.x;
                 int y = player.y;
-                BufferedImage image = ImageIO.read(new File("Resources/people" + i + ".png"));
+                String dir = "";
+                switch (player.direction) {
+                    case 0: dir = "Up"; break;
+                    case 1: dir = "Right"; break;
+                    case 2: dir = "Down"; break;
+                    case 3: dir = "Left"; break;
+                }
+                String imgName = "Resources/players/player" + i + dir + ".png";
+                BufferedImage image = ImageIO.read(new File(imgName));
                 JLabel picLabel = new JLabel(new ImageIcon(image));
                 picLabel.setBounds(x*width, y*width, width, width);
                 this.add(picLabel);
