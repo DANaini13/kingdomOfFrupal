@@ -100,11 +100,12 @@ public class PlayerService {
             case "forest": energyChanged -= 1; break;
             case "desert": energyChanged -= 2; break;
         }
-
+        boolean flag = false;
         switch (map[x][y].name) {
             case "Boulder": energyChanged -= 20; break;
             case "Tree": energyChanged -= 10; break;
             case "Blackberry": energyChanged -= 6; break;
+            case "Diamond": flag = true; break;
         }
         map[x][y].visiable = true;
         playerManager.resetEnergy(account, energyChanged);
@@ -112,6 +113,18 @@ public class PlayerService {
         ServerManager serverManager = ServerManager.getServerManager(2022);
         JSONObject jsonObject = generateResponsePacket();
         serverManager.sendNotifications(jsonObject);
+        if(flag) {
+            JSONObject gameoverObject = new JSONObject();
+            try {
+                gameoverObject.put("command", "gameOver");
+                gameoverObject.put("hasWinner", "true");
+                gameoverObject.put("winner", account);
+                serverManager.sendNotifications(gameoverObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
 

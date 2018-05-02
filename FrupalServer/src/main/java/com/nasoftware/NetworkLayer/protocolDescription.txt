@@ -55,4 +55,10 @@ newPlayerComing {
     command: newPlayer
     name: what ever
 }
+
+gameOver {
+    command: gameOver
+    winner: name
+    hasWinner: true | false
+}
 ##########################PUSH########################

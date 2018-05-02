@@ -292,3 +292,4 @@ Pretty Rock
 21,20,0,0,Blackberry
 23,9,0,0,Blackberry
 23,6,0,0,Blackberry
+6,20,0,1,Diamond

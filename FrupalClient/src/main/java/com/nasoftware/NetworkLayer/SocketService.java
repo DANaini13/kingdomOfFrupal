@@ -73,7 +73,7 @@ public class SocketService {
         }
     }
 
-    void recivePacketService(CompletionHandler handler) {
+    void receivePacketService(CompletionHandler handler) {
         ReceiveService receiveService = new ReceiveService(in, handler);
         receiveService.start();
     }

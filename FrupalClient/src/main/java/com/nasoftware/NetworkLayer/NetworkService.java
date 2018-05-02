@@ -89,7 +89,7 @@ public class NetworkService {
 
     private void setReceiveService() {
         SocketService socketService = SocketService.getSocketService();
-        socketService.recivePacketService((response) -> {
+        socketService.receivePacketService((response) -> {
             try {
                 String command = response.get("command").toString();
                 lock.lock();

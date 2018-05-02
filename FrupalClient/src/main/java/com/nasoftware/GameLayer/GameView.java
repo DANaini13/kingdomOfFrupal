@@ -59,6 +59,7 @@ public class GameView extends JPanel {
                         case "Boulder": image = ImageIO.read(new File("Resources/boulder.png")); break;
                         case "Tree": image = ImageIO.read(new File("Resources/tallTree.png")); break;
                         case "Blackberry": image = ImageIO.read(new File("Resources/tree.png")); break;
+                        case "Diamond": image = ImageIO.read(new File("Resources/diamond.png")); break;
                     }
                     JLabel picLabel = new JLabel(new ImageIcon(image));
                     picLabel.setBounds(x*width, y*width, width, width);
