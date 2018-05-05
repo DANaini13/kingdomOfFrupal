@@ -107,24 +107,49 @@ public class PlayerService {
             case "Blackberry": energyChanged -= 6; break;
             case "Diamond": flag = true; break;
         }
-        map[x][y].visiable = true;
+        if(!map[x][y].visibleList.contains(account)) {
+            map[x][y].visibleList.add(account);
+        }
         playerManager.resetEnergy(account, energyChanged);
         playerManager.resetPosition(account, x, y);
+
         ServerManager serverManager = ServerManager.getServerManager(2022);
+        it = players.iterator();
+        while (it.hasNext()) {
+            Player player = (Player)it.next();
+            if(player.account.equals(account) && player.energy < 0) {
+                JSONObject kickedOutMessage = new JSONObject();
+                try {
+                    kickedOutMessage.put("command", "kickedOut");
+                    kickedOutMessage.put("account", player.account);
+                    serverManager.sendNotifications(kickedOutMessage);
+                    playerManager.removePlayer(account);
+                    if(playerManager.getPlayerList().size() <= 0) {
+                        MapService.resetMap();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         JSONObject jsonObject = generateResponsePacket();
         serverManager.sendNotifications(jsonObject);
         if(flag) {
-            JSONObject gameoverObject = new JSONObject();
+            JSONObject gameOverObject = new JSONObject();
             try {
-                gameoverObject.put("command", "gameOver");
-                gameoverObject.put("hasWinner", "true");
-                gameoverObject.put("winner", account);
-                serverManager.sendNotifications(gameoverObject);
+                gameOverObject.put("command", "gameOver");
+                gameOverObject.put("hasWinner", "true");
+                gameOverObject.put("winner", account);
+                serverManager.sendNotifications(gameOverObject);
+                MapService.resetMap();
+                playerManager.removeAll();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
         }
+
     }
 
 
@@ -157,7 +182,18 @@ public class PlayerService {
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("x", i);
                     jsonObject.put("y", j);
-                    jsonObject.put("visible", item.visiable? 1:0);
+                    if(item.visibleList.size() <= 0) {
+                        jsonObject.put("visibleList", "empty");
+                    }else {
+                        LinkedList<JSONObject> visibleList = new LinkedList<>();
+                        Iterator playerIt = item.visibleList.iterator();
+                        while (playerIt.hasNext()) {
+                            JSONObject temp = new JSONObject();
+                            temp.put("name", playerIt.next().toString());
+                            visibleList.add(temp);
+                        }
+                        jsonObject.put("visibleList", visibleList);
+                    }
                     jsonObject.put("type", item.type);
                     jsonObject.put("name", item.name);
                     mapList.add(jsonObject);

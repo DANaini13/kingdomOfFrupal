@@ -92,4 +92,11 @@ public class PlayerManager {
         }
         lock.unlock();
     }
+
+    public void removeAll() {
+        lock.lock();
+        playerList = new LinkedList<>();
+        lock.unlock();
+    }
+
 }

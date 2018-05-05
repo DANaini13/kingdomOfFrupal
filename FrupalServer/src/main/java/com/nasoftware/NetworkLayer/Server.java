@@ -14,9 +14,11 @@ public class Server extends Thread {
     private final Socket server;
     private Lock lock = new ReentrantLock();
     private String account = "";
+    private Integer serverID;
 
-    static public Server create(Socket server) {
+    static public Server create(Socket server, int id) {
         Server newServer = new Server(server);
+        newServer.serverID = id;
         newServer.start();
         return newServer;
     }
@@ -35,6 +37,7 @@ public class Server extends Thread {
                 dispatchCommand(new JSONObject(buffer));
                 buffer = in.readUTF();
             }
+            ServerManager.getServerManager(2202).removeServer(serverID);
         } catch (IOException e) {
             PlayerManager playerManager = PlayerManager.getPlayerManager();
             playerManager.removePlayer(account);

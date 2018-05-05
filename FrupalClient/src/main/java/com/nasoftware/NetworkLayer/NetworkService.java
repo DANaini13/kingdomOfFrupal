@@ -2,37 +2,64 @@ package com.nasoftware.NetworkLayer;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+
 class SyncChecker extends Thread
 {
-    private HashMap<String, JSONObject> source;
-    private String command;
-    private CompletionHandler handler;
-    private Lock lock;
+    static private SyncChecker syncChecker;
 
-    SyncChecker(HashMap<String, JSONObject> source, String command, CompletionHandler handler, Lock lock) {
+    static SyncChecker getSyncChecker(HashMap<String, JSONObject> source, Lock lock) {
+        if(syncChecker == null) {
+            syncChecker = new SyncChecker(source, lock);
+            syncChecker.start();
+        }
+        return syncChecker;
+    }
+
+    void registerSyncHandler(String command, CompletionHandler handler) {
+        this.handlerLock.lock();
+        this.handlerBuffer.put(command, handler);
+        this.handlerLock.unlock();
+    }
+
+    private HashMap<String, JSONObject> source;
+    private Lock sourceLock;
+    private HashMap<String, CompletionHandler> handlerBuffer;
+    private Lock handlerLock;
+
+    private SyncChecker(HashMap<String, JSONObject> source, Lock lock) {
         this.source = source;
-        this.command = command;
-        this.handler = handler;
-        this.lock = lock;
+        this.sourceLock = lock;
+        this.handlerBuffer = new HashMap<>();
+        this.handlerLock = new ReentrantLock();
     }
 
     public void run() {
         while (true) {
             try {
                 Thread.sleep(100);
-                lock.lock();
-                JSONObject response = source.get(command);
-                if(response != null) {
-                    handler.response(response);
-                    source.put(command, null);
-                    System.out.println("take out packet" + response);
+                this.handlerLock.lock();
+                Iterator it = handlerBuffer.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry entry = (Map.Entry)it.next();
+                    String command = entry.getKey().toString();
+                    CompletionHandler handler = (CompletionHandler) entry.getValue();
+                    sourceLock.lock();
+                    JSONObject response = source.get(command);
+                    if(response != null) {
+                        handler.response(response);
+                        source.put(command, null);
+                        System.out.println("take out packet" + response);
+                    }
+                    sourceLock.unlock();
                 }
-                lock.unlock();
+                this.handlerLock.unlock();
             } catch (InterruptedException e) {
-                lock.unlock();
+                sourceLock.unlock();
                 e.printStackTrace();
             }
         }
@@ -50,7 +77,6 @@ public class NetworkService {
     }
 
     private HashMap<String, JSONObject> packetBuffer = new HashMap<>();
-    private HashMap<String, Integer> syncRequestBuffer = new HashMap<>();
     private Lock lock = new ReentrantLock();
 
     public void CGIRequest(JSONObject args, CompletionHandler handler) {
@@ -80,11 +106,13 @@ public class NetworkService {
     }
 
     public void SetSyncRequest(String command, CompletionHandler handler) {
-        if(syncRequestBuffer.containsKey(command))
-            return;
-        SyncChecker syncChecker = new SyncChecker(packetBuffer, command, handler, lock);
-        syncChecker.start();
-        syncRequestBuffer.put(command, 1);
+        SyncChecker syncChecker = SyncChecker.getSyncChecker(packetBuffer, lock);
+        syncChecker.registerSyncHandler(command, handler);
+    }
+
+    public void closeConnection() {
+        SocketService socketService = SocketService.getSocketService();
+        socketService.closeConnection();
     }
 
     private void setReceiveService() {

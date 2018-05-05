@@ -28,7 +28,7 @@ public class ServerManager extends Thread {
 
     ServerManager(int port) {
         this.port = port;
-        this.serverMap = new HashMap<String, Server>();
+        this.serverMap = new HashMap<>();
     }
 
     public void run() {
@@ -36,7 +36,7 @@ public class ServerManager extends Thread {
             ServerSocket serverSocket = new ServerSocket(port);
             while (true) {
                 Socket server = serverSocket.accept();
-                Server newServer = Server.create(server);
+                Server newServer = Server.create(server, serverID);
                 this.serverMap.put(serverID.toString(), newServer);
                 ++serverID;
             }
@@ -56,4 +56,9 @@ public class ServerManager extends Thread {
         mapLock.unlock();
     }
 
+    public void removeServer(Integer serverID) {
+        mapLock.lock();
+        this.serverMap.remove(serverID.toString());
+        mapLock.unlock();
+    }
 }

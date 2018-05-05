@@ -1,9 +1,7 @@
-package com.nasoftware;
+package com.nasoftware.GameLayer;
 
 import com.nasoftware.LogicLayer.AccountService;
-import com.nasoftware.NetworkLayer.CompletionHandler;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,7 +46,7 @@ public class LoginPage extends JPanel {
         this.add(accountTextField);
 
         logInButton.setText("Login");
-        logInButton.setBounds(120, 300, 60, 30);
+        logInButton.setBounds(100, 300, 100, 30);
         JFrame currentFrame = this.frame;
         logInButton.addActionListener(new ActionListener() {
             @Override
@@ -60,6 +58,7 @@ public class LoginPage extends JPanel {
                 accountService.login(accountTextField.getText(), (response) -> {
                     try {
                         if(response.getInt("error") == 0) {
+                            accountService.myAccount = accountTextField.getText();
                             currentFrame.dispose();
                         }
 

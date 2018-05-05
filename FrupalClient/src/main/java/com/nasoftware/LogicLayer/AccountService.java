@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 public class AccountService {
     static private AccountService accountService = null;
+    static public String myAccount;
     static public AccountService getAccountService() {
         if(accountService == null)
             accountService = new AccountService();

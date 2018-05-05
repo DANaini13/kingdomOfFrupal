@@ -77,4 +77,14 @@ public class SocketService {
         ReceiveService receiveService = new ReceiveService(in, handler);
         receiveService.start();
     }
+
+    void closeConnection() {
+        try {
+            outLock.lock();
+            out.writeUTF("close");
+            outLock.unlock();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

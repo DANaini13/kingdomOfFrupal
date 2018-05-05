@@ -39,7 +39,11 @@ SyncStatus {
         block{
             x: x
             y: y
-            visible: 0 | 1
+            visibleList: [
+                name1,
+                name2,
+                ...
+            ]
             type: example
             name: example
         },
@@ -60,5 +64,10 @@ gameOver {
     command: gameOver
     winner: name
     hasWinner: true | false
+}
+
+kickedOut {
+    command: kickedOut
+    account: name
 }
 ##########################PUSH########################

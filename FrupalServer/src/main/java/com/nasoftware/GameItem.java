@@ -1,20 +1,26 @@
 package com.nasoftware;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+
 public class GameItem {
     public final String type;
     public final String name;
-    public boolean visiable;
+    public LinkedList<String> visibleList;
 
     public GameItem(String type, String name) {
         this.type = type;
         this.name = name;
-        this.visiable = false;
+        this.visibleList = new LinkedList<>();
     }
 
     public GameItem(GameItem copy) {
         this.type = copy.type;
         this.name = copy.name;
-        this.visiable = copy.visiable;
+        Iterator it = copy.visibleList.iterator();
+        while (it.hasNext()) {
+            visibleList.add(it.next().toString());
+        }
     }
 
     public String toString() {
@@ -30,6 +36,7 @@ public class GameItem {
             case "Boulder": result = "B"; break;
             case "Tree": result = "T"; break;
             case "Blackberry": result = "S"; break;
+            case "Diamond": result = "D"; break;
         }
         return result;
     }

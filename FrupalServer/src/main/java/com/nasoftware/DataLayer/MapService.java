@@ -38,6 +38,12 @@ public class MapService {
         return mapWidth;
     }
 
+    static public void resetMap() {
+        lock.lock();
+        gameItem = loadMap();
+        lock.unlock();
+    }
+
     static private GameItem[][] loadMap() {
         GameItem[][] result = null;
         try {

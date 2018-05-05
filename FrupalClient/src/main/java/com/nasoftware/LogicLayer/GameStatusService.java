@@ -21,4 +21,14 @@ public class GameStatusService {
         NetworkService networkService = NetworkService.getNetworkService();
         networkService.SetSyncRequest("newPlayer", handler);
     }
+
+    public void setGameOverHandler(CompletionHandler handler) {
+        NetworkService networkService = NetworkService.getNetworkService();
+        networkService.SetSyncRequest("gameOver", handler);
+    }
+
+    public void setPlayerKickedOutHandler(CompletionHandler handler) {
+        NetworkService networkService = NetworkService.getNetworkService();
+        networkService.SetSyncRequest("kickedOut", handler);
+    }
 }
