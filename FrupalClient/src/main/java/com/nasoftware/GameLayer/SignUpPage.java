@@ -8,75 +8,90 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class LoginPage extends JPanel {
-    static private LoginPage loginPage = null;
+import static java.lang.Thread.sleep;
 
-    static public LoginPage getLoginPage() {
-        if(loginPage == null) {
+public class SignUpPage extends JPanel {
+    static private SignUpPage signUpPage = null;
+
+    static public SignUpPage getSignUpPage() {
+        if(signUpPage == null) {
             JFrame frame = new JFrame();
-            loginPage = new LoginPage(frame);
-            loginPage.setLayout(null);
-            loginPage.setBounds(0, 0, 300, 500);
+            signUpPage = new SignUpPage(frame);
+            signUpPage.setLayout(null);
+            signUpPage.setBounds(0, 0, 300, 500);
             frame.setSize(300, 500);
             frame.setResizable(false);
-            frame.setContentPane(loginPage);
-            loginPage.initPage();
+            frame.setContentPane(signUpPage);
+            signUpPage.initPage();
             frame.setVisible(true);
             frame.setTitle("Kingdom of Frupal");
         }
-        return loginPage;
+        return signUpPage;
     }
 
     private JFrame frame;
-    private JLabel jLabel;
 
-    LoginPage(JFrame frame) {
+    SignUpPage(JFrame frame) {
         this.frame = frame;
     }
 
     void initPage() {
-        jLabel = new JLabel();
-        jLabel.setText("Ready to play?");
+        JLabel jLabel = new JLabel();
+        jLabel.setText("Welcome to the Kingdom of Frupal");
         jLabel.setBounds(50, 100, 250, 30);
         this.add(jLabel);
 
         JTextField accountTextField = new JTextField("Account");
-        accountTextField.setBounds(50, 200, 200, 30);
+        accountTextField.setBounds(50, 150, 200, 30);
         this.add(accountTextField);
 
         JTextField passwordTextField = new JTextField("Password");
-        passwordTextField.setBounds(50, 230, 200, 30);
+        passwordTextField.setBounds(50, 180, 200, 30);
         this.add(passwordTextField);
 
+        JTextField retypePasswordTextField = new JTextField("Retype password");
+        retypePasswordTextField.setBounds(50, 210, 200, 30);
+        this.add(retypePasswordTextField);
 
-        JButton logInButton = new JButton();
-        logInButton.setText("Login");
-        logInButton.setBounds(100, 300, 100, 30);
+        JButton signUpButton = new JButton();
+        signUpButton.setText("SignUp");
+        signUpButton.setBounds(100, 280, 100, 30);
         JFrame currentFrame = this.frame;
-        logInButton.addActionListener(new ActionListener() {
+        signUpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(accountTextField.getText().equals("Account") ||
+                if (accountTextField.getText().equals("Account") ||
                         accountTextField.getText().equals("")) {
                     jLabel.setForeground(Color.RED);
                     jLabel.setText("Please input your account!!!");
                     return;
                 }
-                if(passwordTextField.getText().equals("Password") ||
+                if (passwordTextField.getText().equals("Password") ||
                         passwordTextField.getText().equals("")) {
                     jLabel.setForeground(Color.RED);
                     jLabel.setText("Please input your password!!!");
                     return;
                 }
+                if (passwordTextField.getText().equals("Retype password") ||
+                        passwordTextField.getText().equals("")) {
+                    jLabel.setForeground(Color.RED);
+                    jLabel.setText("Please retype your password!!!");
+                    return;
+                }
+                if (!passwordTextField.getText().equals(retypePasswordTextField.getText())) {
+                    jLabel.setForeground(Color.RED);
+                    jLabel.setText("two passwords doesn't match!");
+                    return;
+                }
                 jLabel.setText(" ");
                 jLabel.setForeground(Color.BLACK);
                 AccountService accountService = AccountService.getAccountService();
-                accountService.login(accountTextField.getText(), passwordTextField.getText(), (response) -> {
+                accountService.signUp(accountTextField.getText(), passwordTextField.getText(), (response) -> {
                     try {
                         if(response.getInt("error") == 0) {
-                            accountService.myAccount = accountTextField.getText();
+                            LoginPage loginPage = LoginPage.getLoginPage();
+                            loginPage.showMessage("sign up successfully!");
                             currentFrame.dispose();
-                            GameViewController gameViewController = GameViewController.getGameViewController();
                         }
                     } catch (JSONException e1) {
                         try {
@@ -89,22 +104,6 @@ public class LoginPage extends JPanel {
                 });
             }
         });
-        this.add(logInButton);
-
-        JButton signUpButton = new JButton();
-        signUpButton.setText("Sign Up");
-        signUpButton.setBounds(100, 330, 100, 30);
-        signUpButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                SignUpPage signUpPage = SignUpPage.getSignUpPage();
-            }
-        });
         this.add(signUpButton);
-    }
-
-    public void showMessage(String message) {
-        jLabel.setForeground(Color.BLACK);
-        jLabel.setText(message);
     }
 }

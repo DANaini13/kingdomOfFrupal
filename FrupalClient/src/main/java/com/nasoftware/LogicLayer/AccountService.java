@@ -14,11 +14,25 @@ public class AccountService {
         return accountService;
     }
 
-    public void login(String account, CompletionHandler handler) {
+    public void login(String account, String password, CompletionHandler handler) {
         NetworkService networkService = NetworkService.getNetworkService();
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("command", "login");
+            jsonObject.put("password", password);
+            jsonObject.put("account", account);
+            networkService.CGIRequest(jsonObject, handler);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void signUp(String account, String password, CompletionHandler handler) {
+        NetworkService networkService = NetworkService.getNetworkService();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("command", "signUp");
+            jsonObject.put("password", password);
             jsonObject.put("account", account);
             networkService.CGIRequest(jsonObject, handler);
         } catch (JSONException e) {

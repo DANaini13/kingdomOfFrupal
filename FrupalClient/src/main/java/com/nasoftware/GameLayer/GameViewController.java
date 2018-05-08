@@ -50,6 +50,11 @@ public class GameViewController extends JPanel implements KeyListener {
             statusView.setBounds(180, 0, 500, 120);
             frame.add(statusView);
 
+            ToolsView toolsView = new ToolsView();
+            toolsView.setLayout(null);
+            toolsView.setBounds(0, 0, 180, 700);
+            frame.add(toolsView);
+
             /**
              * Game Sync Events Below:
              */
@@ -106,6 +111,12 @@ public class GameViewController extends JPanel implements KeyListener {
                     statusView.render(gameViewController.getPlayers());
                     tempList = gameViewController.getPlayerList();
                     gameViewController.cleanPlayers();
+                    LinkedList<String> linkedList = new LinkedList<>();
+                    linkedList.add("test");
+                    linkedList.add("test1");
+                    linkedList.add("test2");
+                    linkedList.add("test3");
+                    toolsView.render(linkedList);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -129,7 +140,7 @@ public class GameViewController extends JPanel implements KeyListener {
                    }
                    GameOverPage gameOverPage = GameOverPage.generateGameOverPage(name, gameViewController.getPlayerList());
                    NetworkService.getNetworkService().closeConnection();
-                   sleep(5000);
+                   sleep(2000);
                    System.exit(0);
                    frame.dispose();
                } catch (JSONException e) {
@@ -146,7 +157,7 @@ public class GameViewController extends JPanel implements KeyListener {
                         GameOverPage gameOverPage = GameOverPage.generateGameOverPage();
                         frame.dispose();
                         NetworkService.getNetworkService().closeConnection();
-                        sleep(5000);
+                        sleep(2000);
                         System.exit(0);
                     } else {
                         gameAlertView.alert("sorry, " + response.getString("account") + " were dead!");
@@ -154,6 +165,27 @@ public class GameViewController extends JPanel implements KeyListener {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            // removed an Obstacle
+            gameStatusService.setPlayerHitObstacleHandler((response) -> {
+                try {
+                    int energyConsumed = response.getInt("energyConsumed");
+                    String obstacle = response.getString("obstacle");
+                    gameAlertView.alert("you just removed a " + obstacle + ", which took you " + -energyConsumed + " points energy!!!");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            // got power bar
+            gameStatusService.setPickPowerBarHandler((response) -> {
+                try {
+                    int energy = response.getInt("gotEnergy");
+                    gameAlertView.alert("Congratulations! you got a power bar with " + energy + " points energy!!!");
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             });
@@ -210,7 +242,6 @@ public class GameViewController extends JPanel implements KeyListener {
     @Override
     public void keyReleased(KeyEvent keyEvent) {
         if(keyEvent.getKeyCode() == 80) {
-            System.out.println(keyEvent.getKeyCode());
             copyFromOriginal(gameItems, mapWidth);
             gameView.render(gameItems, mapWidth, tempList);
         }

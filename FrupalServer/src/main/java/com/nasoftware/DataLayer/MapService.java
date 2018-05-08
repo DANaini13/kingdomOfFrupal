@@ -44,6 +44,24 @@ public class MapService {
         lock.unlock();
     }
 
+    static public void removeItem(int x, int y) {
+        lock.lock();
+        gameItem[x][y].name = "None";
+        lock.unlock();
+    }
+
+    static public void removePlayer(String account) {
+        lock.lock();
+        for(int x = 0; x < mapWidth; ++x) {
+            for(int y = 0; y < mapWidth; ++y) {
+                if(gameItem[x][y].visibleList.contains(account)) {
+                    gameItem[x][y].visibleList.remove(account);
+                }
+            }
+        }
+        lock.unlock();
+    }
+
     static private GameItem[][] loadMap() {
         GameItem[][] result = null;
         try {

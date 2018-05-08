@@ -7,7 +7,7 @@ public class Player {
     int x = 0;
     int y = 0;
     int energy = 100;
-    int wealth = 100;
+    int wealth = 1000;
     int direction = 0;
     LinkedList<String> toolList = new LinkedList<>();
 

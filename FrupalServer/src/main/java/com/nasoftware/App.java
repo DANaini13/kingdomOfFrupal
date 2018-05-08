@@ -1,5 +1,5 @@
 package com.nasoftware;
-
+import com.nasoftware.DataLayer.AccountDataService;
 import com.nasoftware.DataLayer.MapService;
 import com.nasoftware.NetworkLayer.ServerManager;
 
@@ -11,7 +11,8 @@ public class App
 {
     public static void main( String[] args )
     {
-        GameItem gameItem[][] = MapService.getMap();
+        MapService.getMap();
         ServerManager serverManager = ServerManager.getServerManager(2202);
+        AccountDataService accountDataService = AccountDataService.getAccountDataService();
     }
 }

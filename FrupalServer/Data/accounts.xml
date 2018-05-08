@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<accounts>
+  <account accountID="test0">
+    <password>91b4d142823f7d20c5f08df69122de43f35f057a988d9619f6d3138485c9a203</password>
+  </account>
+  <account accountID="test1">
+    <password>a7fda0b61e2047f0f1057d1f5f064c272fd5d490961c531f4df64b0dd354683a</password>
+  </account>
+</accounts>

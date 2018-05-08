@@ -30,6 +30,7 @@ public class GameView extends JPanel {
 
         for(int y = 0; y<mapWidth; ++y) {
             for(int x = 0; x<mapWidth; ++x) {
+                /*
                 Iterator it1 = playerList.iterator();
                 boolean flag = false;
                 while (it1.hasNext()) {
@@ -43,6 +44,7 @@ public class GameView extends JPanel {
                     map[x][y].visiable = true;
                 if(!map[x][y].visiable)
                     continue;
+                    */
                 try {
                     BufferedImage image = null;
                     switch (map[x][y].type) {
@@ -57,6 +59,11 @@ public class GameView extends JPanel {
                         case "Tree": image = ImageIO.read(new File("Resources/tallTree.png")); break;
                         case "Blackberry": image = ImageIO.read(new File("Resources/tree.png")); break;
                         case "Diamond": image = ImageIO.read(new File("Resources/diamond.png")); break;
+                        case "PowerBar": image = ImageIO.read(new File("Resources/powerBar.png")); break;
+                        case "Chest1": image = ImageIO.read(new File("Resources/chest1.png")); break;
+                        case "Binoculars": image = ImageIO.read(new File("Resources/binoculars.png")); break;
+                        case "Boat": image = ImageIO.read(new File("Resources/boat.png")); break;
+                        case "Rock": image = ImageIO.read(new File("Resources/rock.png")); break;
                     }
                     JLabel picLabel = new JLabel(new ImageIcon(image));
                     picLabel.setBounds(x*width, y*width, width, width);

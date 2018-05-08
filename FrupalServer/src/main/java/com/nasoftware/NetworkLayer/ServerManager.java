@@ -23,12 +23,21 @@ public class ServerManager extends Thread {
 
     private final int port;
     private HashMap<String, Server> serverMap;
+    private HashMap<String, Server> accountMap;
     private Lock mapLock = new ReentrantLock();
+    private Lock accountLock = new ReentrantLock();
     private Integer serverID = 0;
 
     ServerManager(int port) {
         this.port = port;
         this.serverMap = new HashMap<>();
+        this.accountMap = new HashMap<>();
+    }
+
+    public void addToAccountMap(String account, Server server) {
+        accountLock.lock();
+        this.accountMap.put(account, server);
+        accountLock.unlock();
     }
 
     public void run() {
@@ -46,19 +55,33 @@ public class ServerManager extends Thread {
     }
 
     public void sendNotifications(JSONObject message) {
-        mapLock.lock();
-        Iterator it = serverMap.entrySet().iterator();
+        accountLock.lock();
+        Iterator it = accountMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry)it.next();
             Server server = (Server)entry.getValue();
             server.sendPack(message.toString());
         }
-        mapLock.unlock();
+        accountLock.unlock();
     }
 
-    public void removeServer(Integer serverID) {
+    public void pushMessageTo(String account, JSONObject message) {
+        accountLock.lock();
+        Server server = accountMap.get(account);
+        if(server == null) {
+            accountLock.unlock();
+            return;
+        }
+        server.sendPack(message.toString());
+        accountLock.unlock();
+    }
+
+    public void removeServer(Integer serverID, String account) {
         mapLock.lock();
         this.serverMap.remove(serverID.toString());
         mapLock.unlock();
+        accountLock.lock();
+        this.accountMap.remove(account);
+        accountLock.unlock();
     }
 }

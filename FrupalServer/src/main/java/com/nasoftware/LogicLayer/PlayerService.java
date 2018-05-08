@@ -1,5 +1,7 @@
 package com.nasoftware.LogicLayer;
 
+import com.google.common.hash.Hashing;
+import com.nasoftware.DataLayer.AccountDataService;
 import com.nasoftware.DataLayer.MapService;
 import com.nasoftware.DataLayer.Player;
 import com.nasoftware.DataLayer.PlayerManager;
@@ -7,6 +9,8 @@ import com.nasoftware.GameItem;
 import com.nasoftware.NetworkLayer.ServerManager;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,17 +25,56 @@ public class PlayerService {
         return playerService;
     }
 
-    public void login(String account, CompletionHandler handler) {
+    public void signUp(String account, String password, CompletionHandler handler) {
+        password = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
+        AccountDataService accountDataService = AccountDataService.getAccountDataService();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("command", "signUp");
+            if(accountDataService.addAccount(account, password)) {
+                jsonObject.put("error", 0);
+            }else {
+                jsonObject.put("error","Sorry, account already exist!");
+            }
+            handler.response(jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public void login(String account, String password, CompletionHandler handler) {
+        password = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
+        AccountDataService accountDataService = AccountDataService.getAccountDataService();
+        int result = accountDataService.varifyAccount(account, password);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            if(result == -1) {
+                jsonObject.put("command", "login");
+                jsonObject.put("error", "sorry, cannot find your account!");
+                handler.response(jsonObject);
+                return;
+            } else if(result == -2){
+                jsonObject.put("command", "login");
+                jsonObject.put("error", "sorry, your password is incorrect!");
+                handler.response(jsonObject);
+                return;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         PlayerManager playerManager = PlayerManager.getPlayerManager();
         LinkedList<Player> userList = playerManager.getPlayerList();
         try {
-            JSONObject jsonObject = new JSONObject();
             jsonObject.put("command", "login");
             Player temp = new Player();
             temp.account = account;
             if(userList.contains(temp)) {
-                jsonObject.put("error", "the account already exist!");
+                jsonObject.put("error", 0);
                 handler.response(jsonObject);
+                move(account, "nothing");
                 return;
             }
             if(userList.size() >= 4) {
@@ -71,6 +114,8 @@ public class PlayerService {
                 y = player.y;
             }
         }
+        int tempX = x;
+        int tempY = y;
         switch (direction) {
             case "up":
                 y -= 1;
@@ -91,29 +136,58 @@ public class PlayerService {
             default:
                 break;
         }
+        ServerManager serverManager = ServerManager.getServerManager(2022);
         int energyChanged = 0;
         GameItem[][] map = MapService.getMap();
         switch (map[x][y].type) {
-            case "wall": return;
+            case "wall": x = tempX; y = tempY; energyChanged -= 1; break;
             case "meadow": energyChanged -= 1; break;
-            case "water": return;
+            case "water": x = tempX; y = tempY; energyChanged -= 1; break;
             case "forest": energyChanged -= 1; break;
             case "desert": energyChanged -= 2; break;
         }
         boolean flag = false;
+        boolean hitObstacle = false;
+        int energyConsumed = 0;
         switch (map[x][y].name) {
-            case "Boulder": energyChanged -= 20; break;
-            case "Tree": energyChanged -= 10; break;
-            case "Blackberry": energyChanged -= 6; break;
-            case "Diamond": flag = true; break;
+            case "Boulder": energyConsumed = -20; hitObstacle = true; break;
+            case "Tree": energyConsumed = -10; hitObstacle = true; break;
+            case "Blackberry": energyConsumed = -6; hitObstacle = true; break;
+            case "Diamond": flag = true; hitObstacle = true; break;
+            case "PowerBar":
+                energyChanged += 12;
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("command", "pickPowerBar");
+                    jsonObject.put("gotEnergy", 12);
+                    serverManager.pushMessageTo(account, jsonObject);
+                    MapService.removeItem(x, y);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
         }
+        energyChanged += energyConsumed;
+
+        if(hitObstacle) {
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("command", "removeObstacle");
+                jsonObject.put("obstacle", map[x][y].name);
+                jsonObject.put("energyConsumed", energyConsumed);
+                serverManager.pushMessageTo(account, jsonObject);
+                MapService.removeItem(x, y);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
         if(!map[x][y].visibleList.contains(account)) {
             map[x][y].visibleList.add(account);
         }
         playerManager.resetEnergy(account, energyChanged);
         playerManager.resetPosition(account, x, y);
 
-        ServerManager serverManager = ServerManager.getServerManager(2022);
         it = players.iterator();
         while (it.hasNext()) {
             Player player = (Player)it.next();
@@ -124,6 +198,7 @@ public class PlayerService {
                     kickedOutMessage.put("account", player.account);
                     serverManager.sendNotifications(kickedOutMessage);
                     playerManager.removePlayer(account);
+                    MapService.removePlayer(account);
                     if(playerManager.getPlayerList().size() <= 0) {
                         MapService.resetMap();
                     }

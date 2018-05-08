@@ -37,11 +37,8 @@ public class Server extends Thread {
                 dispatchCommand(new JSONObject(buffer));
                 buffer = in.readUTF();
             }
-            ServerManager.getServerManager(2202).removeServer(serverID);
+            ServerManager.getServerManager(2202).removeServer(serverID, account);
         } catch (IOException e) {
-            PlayerManager playerManager = PlayerManager.getPlayerManager();
-            playerManager.removePlayer(account);
-            return;
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -53,14 +50,23 @@ public class Server extends Thread {
             switch (command) {
                 case "login": {
                     PlayerService playerService = PlayerService.getPlayerService();
-                    playerService.login(args.get("account").toString(), (JSONObject response) -> {
+                    playerService.login(args.getString("account"), args.getString("password"), (JSONObject response) -> {
                         try {
-                            if (response.get("error").toString().equals("0")) {
-                                this.account = args.get("account").toString();
+                            if (response.getString("error").equals("0")) {
+                                this.account = args.getString("account");
+                                ServerManager serverManager = ServerManager.getServerManager(2022);
+                                serverManager.addToAccountMap(this.account, this);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        sendPack(response.toString());
+                    });
+                    break;
+                }
+                case "signUp": {
+                    PlayerService playerService = PlayerService.getPlayerService();
+                    playerService.signUp(args.getString("account"), args.getString("password"), (JSONObject response) -> {
                         sendPack(response.toString());
                     });
                     break;
@@ -86,7 +92,7 @@ public class Server extends Thread {
             out.writeUTF(pack);
             lock.unlock();
         } catch (IOException e) {
-            e.printStackTrace();
+            return;
         }
     }
 

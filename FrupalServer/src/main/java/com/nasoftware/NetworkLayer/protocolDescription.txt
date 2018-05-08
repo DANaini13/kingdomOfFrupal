@@ -2,6 +2,7 @@
 ##########################CGI#########################
 Login {
     command : login
+    password : password
     account : accountName
 }
 LoginResponse {
@@ -9,11 +10,23 @@ LoginResponse {
     error   : 0 | fail reason
 }
 
+Sign up {
+    command : signUp
+    account : account
+    password : password
+}
+Sign up response {
+    command : signUp
+    error : 0 | fail reason
+}
+
 
 PlayOperation {
     command : move
     operation : up | left | down | right
 }
+
+
 
 ##########################PUSH########################
 SyncStatus {
@@ -69,5 +82,16 @@ gameOver {
 kickedOut {
     command: kickedOut
     account: name
+}
+
+removeObstacle {
+    command: removeObstacle
+    obstacle: name
+    energyConsumed: number
+}
+
+pickPowerBar {
+    command: pickPowerBar
+    gotEnergy: number
 }
 ##########################PUSH########################

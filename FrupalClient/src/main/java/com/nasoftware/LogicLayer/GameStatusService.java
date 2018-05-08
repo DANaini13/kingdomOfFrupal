@@ -31,4 +31,14 @@ public class GameStatusService {
         NetworkService networkService = NetworkService.getNetworkService();
         networkService.SetSyncRequest("kickedOut", handler);
     }
+
+    public void setPlayerHitObstacleHandler(CompletionHandler handler) {
+        NetworkService networkService = NetworkService.getNetworkService();
+        networkService.SetSyncRequest("removeObstacle", handler);
+    }
+
+    public void setPickPowerBarHandler(CompletionHandler handler) {
+        NetworkService networkService = NetworkService.getNetworkService();
+        networkService.SetSyncRequest("pickPowerBar", handler);
+    }
 }

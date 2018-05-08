@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 public class GameItem {
     public final String type;
-    public final String name;
+    public String name;
     public LinkedList<String> visibleList;
 
     public GameItem(String type, String name) {
@@ -33,10 +33,16 @@ public class GameItem {
             case "meadow": result = " "; break;
         }
         switch (name) {
-            case "Boulder": result = "B"; break;
-            case "Tree": result = "T"; break;
-            case "Blackberry": result = "S"; break;
-            case "Diamond": result = "D"; break;
+            case "Boulder": result += "B"; break;
+            case "Tree": result += "T"; break;
+            case "Blackberry": result += "S"; break;
+            case "Diamond": result += "D"; break;
+            case "PowerBar": result += "="; break;
+            case "Chest1": result += "1"; break;
+            case "Binoculars": result = "oo"; break;
+            case "Boat": result += "V"; break;
+            case "Rock": result += "R"; break;
+            default: result += " ";
         }
         return result;
     }
