@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class LoginPage extends JPanel {
     static private LoginPage loginPage = null;
@@ -20,6 +22,13 @@ public class LoginPage extends JPanel {
             frame.setSize(300, 500);
             frame.setResizable(false);
             frame.setContentPane(loginPage);
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent windowEvent) {
+                    super.windowClosed(windowEvent);
+                    System.exit(0);
+                }
+            });
             loginPage.initPage();
             frame.setVisible(true);
             frame.setTitle("Kingdom of Frupal");
@@ -35,6 +44,7 @@ public class LoginPage extends JPanel {
     }
 
     void initPage() {
+
         jLabel = new JLabel();
         jLabel.setText("Ready to play?");
         jLabel.setBounds(50, 100, 250, 30);

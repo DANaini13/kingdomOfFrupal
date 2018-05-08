@@ -10,6 +10,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 public class GameView extends JPanel {
+
+    private void setVisiable(GameItem[][] map, int x, int y) {
+        try {
+            map[x][y].visiable = true;
+        }catch (ArrayIndexOutOfBoundsException e) {
+        }
+    }
+
     void render(GameItem[][] map, int mapWidth, LinkedList<Player> playerList) {
         this.removeAll();
         int width = 500/mapWidth;
@@ -17,20 +25,45 @@ public class GameView extends JPanel {
         while (it.hasNext()) {
             Player player = (Player)it.next();
             if(player.account.equals(AccountService.myAccount)) {
-                map[player.x - 1][player.y - 1].visiable = true;
-                map[player.x][player.y - 1].visiable = true;
-                map[player.x + 1][player.y - 1].visiable = true;
-                map[player.x - 1][player.y + 1].visiable = true;
-                map[player.x][player.y + 1].visiable = true;
-                map[player.x + 1][player.y + 1].visiable = true;
-                map[player.x - 1][player.y].visiable = true;
-                map[player.x + 1][player.y].visiable = true;
+                setVisiable(map, player.x - 1, player.y - 1);
+                setVisiable(map, player.x - 1, player.y + 1);
+                setVisiable(map, player.x - 1, player.y);
+                setVisiable(map, player.x, player.y - 1);
+                setVisiable(map, player.x, player.y + 1);
+                setVisiable(map, player.x + 1, player.y - 1);
+                setVisiable(map, player.x + 1, player.y + 1);
+                setVisiable(map, player.x + 1, player.y);
+                if(player.toolList.contains("Binoculars")) {
+                    setVisiable(map, player.x - 2, player.y - 2);
+                    setVisiable(map, player.x - 1, player.y - 2);
+                    setVisiable(map, player.x, player.y - 2);
+                    setVisiable(map, player.x + 2, player.y - 2);
+                    setVisiable(map, player.x + 1, player.y - 2);
+                    setVisiable(map, player.x - 2, player.y - 1);
+                    setVisiable(map, player.x - 1, player.y - 1);
+                    setVisiable(map, player.x, player.y - 1);
+                    setVisiable(map, player.x + 2, player.y - 1);
+                    setVisiable(map, player.x + 1, player.y - 1);
+                    setVisiable(map, player.x - 2, player.y);
+                    setVisiable(map, player.x - 1, player.y);
+                    setVisiable(map, player.x + 2, player.y);
+                    setVisiable(map, player.x + 1, player.y);
+                    setVisiable(map, player.x - 2, player.y + 1);
+                    setVisiable(map, player.x - 1, player.y + 1);
+                    setVisiable(map, player.x, player.y + 1);
+                    setVisiable(map, player.x + 2, player.y + 1);
+                    setVisiable(map, player.x + 1, player.y + 1);
+                    setVisiable(map, player.x - 2, player.y + 2);
+                    setVisiable(map, player.x - 1, player.y + 2);
+                    setVisiable(map, player.x, player.y + 2);
+                    setVisiable(map, player.x + 2, player.y + 2);
+                    setVisiable(map, player.x + 1, player.y + 2);
+                }
             }
         }
 
         for(int y = 0; y<mapWidth; ++y) {
             for(int x = 0; x<mapWidth; ++x) {
-                /*
                 Iterator it1 = playerList.iterator();
                 boolean flag = false;
                 while (it1.hasNext()) {
@@ -44,7 +77,6 @@ public class GameView extends JPanel {
                     map[x][y].visiable = true;
                 if(!map[x][y].visiable)
                     continue;
-                    */
                 try {
                     BufferedImage image = null;
                     switch (map[x][y].type) {
@@ -61,9 +93,16 @@ public class GameView extends JPanel {
                         case "Diamond": image = ImageIO.read(new File("Resources/diamond.png")); break;
                         case "PowerBar": image = ImageIO.read(new File("Resources/powerBar.png")); break;
                         case "Chest1": image = ImageIO.read(new File("Resources/chest1.png")); break;
+                        case "Chest2": image = ImageIO.read(new File("Resources/chest2.png")); break;
                         case "Binoculars": image = ImageIO.read(new File("Resources/binoculars.png")); break;
                         case "Boat": image = ImageIO.read(new File("Resources/boat.png")); break;
                         case "Rock": image = ImageIO.read(new File("Resources/rock.png")); break;
+                        case "Jack Hammer": image = ImageIO.read(new File("Resources/jackHammer.png")); break;
+                        case "Hammer and Chisel": image = ImageIO.read(new File("Resources/hammerAndChisel.png")); break;
+                        case "Chain Saw": image = ImageIO.read(new File("Resources/chainSaw.png")); break;
+                        case "Axe": image = ImageIO.read(new File("Resources/axe.png")); break;
+                        case "Shears": image = ImageIO.read(new File("Resources/shears.png")); break;
+                        case "Pruning Saw": image = ImageIO.read(new File("Resources/pruningSaw.png")); break;
                     }
                     JLabel picLabel = new JLabel(new ImageIcon(image));
                     picLabel.setBounds(x*width, y*width, width, width);

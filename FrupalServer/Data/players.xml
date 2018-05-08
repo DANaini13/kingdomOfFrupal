@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<players>
+  <player accountID="test0">
+    <wealth>100000</wealth>
+  </player>
+  <player accountID="test1">
+    <wealth>1000</wealth>
+  </player>
+</players>

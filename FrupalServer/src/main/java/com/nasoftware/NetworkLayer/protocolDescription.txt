@@ -94,4 +94,9 @@ pickPowerBar {
     command: pickPowerBar
     gotEnergy: number
 }
+
+serverNotify {
+    command: notify
+    content: what ever
+}
 ##########################PUSH########################

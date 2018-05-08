@@ -10,6 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.LinkedList;
 
 import static java.lang.Thread.sleep;
@@ -27,6 +29,13 @@ public class GameViewController extends JPanel implements KeyListener {
             frame.setBounds(0, 0, 700, 700);
             frame.setResizable(false);
             frame.setVisible(true);
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent windowEvent) {
+                    super.windowClosed(windowEvent);
+                    System.exit(0);
+                }
+            });
 
             GameView gameView = new GameView();
             gameView.setLayout(null);
@@ -76,6 +85,9 @@ public class GameViewController extends JPanel implements KeyListener {
                         for (int j=0; j<tools.length(); ++j) {
                             player.toolList.add(tools.getString(j));
                         }
+                        if(player.account.equals(AccountService.myAccount)) {
+                            toolsView.render(player.toolList);
+                        }
                         gameViewController.addPlayer(player);
                     }
                 } catch (JSONException e) {
@@ -111,12 +123,6 @@ public class GameViewController extends JPanel implements KeyListener {
                     statusView.render(gameViewController.getPlayers());
                     tempList = gameViewController.getPlayerList();
                     gameViewController.cleanPlayers();
-                    LinkedList<String> linkedList = new LinkedList<>();
-                    linkedList.add("test");
-                    linkedList.add("test1");
-                    linkedList.add("test2");
-                    linkedList.add("test3");
-                    toolsView.render(linkedList);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -185,6 +191,16 @@ public class GameViewController extends JPanel implements KeyListener {
                 try {
                     int energy = response.getInt("gotEnergy");
                     gameAlertView.alert("Congratulations! you got a power bar with " + energy + " points energy!!!");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            // sever notify
+            gameStatusService.setSeverNotifyHandler((response) -> {
+                try {
+                    String content = response.getString("content");
+                    gameAlertView.alert(content);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

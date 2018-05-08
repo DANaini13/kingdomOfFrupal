@@ -302,3 +302,10 @@ Pretty Rock
 13,3,0,0,Binoculars
 10,14,0,0,Boat
 16,7,0,0,Rock
+21,1,0,0,Chest2
+20,5,0,0,Jack Hammer
+13,15,0,0,Hammer and Chisel
+4,19,0,1,Chain Saw
+7,19,0,1,Axe
+18,1,0,0,Shears
+14,7,0,0,Pruning Saw

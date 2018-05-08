@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ServerManager extends Thread {
     private static ServerManager serverManager = null;
 
-    public static ServerManager getServerManager(int port) {
+    public static synchronized ServerManager getServerManager(int port) {
         if(serverManager == null) {
             serverManager = new ServerManager(port);
             serverManager.start();

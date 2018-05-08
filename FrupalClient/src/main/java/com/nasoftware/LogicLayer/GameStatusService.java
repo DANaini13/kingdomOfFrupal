@@ -41,4 +41,9 @@ public class GameStatusService {
         NetworkService networkService = NetworkService.getNetworkService();
         networkService.SetSyncRequest("pickPowerBar", handler);
     }
+
+    public void setSeverNotifyHandler(CompletionHandler handler) {
+        NetworkService networkService = NetworkService.getNetworkService();
+        networkService.SetSyncRequest("notify", handler);
+    }
 }

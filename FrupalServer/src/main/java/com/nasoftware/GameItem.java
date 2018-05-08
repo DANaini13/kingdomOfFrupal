@@ -42,6 +42,13 @@ public class GameItem {
             case "Binoculars": result = "oo"; break;
             case "Boat": result += "V"; break;
             case "Rock": result += "R"; break;
+            case "Chest2": result += "2"; break;
+            case "Jack Hammer": result += "J"; break;
+            case "Hammer and Chisel": result += "H"; break;
+            case "Chain Saw": result += "C"; break;
+            case "Axe": result += "A"; break;
+            case "Shears": result += "E"; break;
+            case "Pruning Saw": result += "P"; break;
             default: result += " ";
         }
         return result;

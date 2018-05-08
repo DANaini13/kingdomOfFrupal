@@ -39,6 +39,19 @@ public class Server extends Thread {
             }
             ServerManager.getServerManager(2202).removeServer(serverID, account);
         } catch (IOException e) {
+            ServerManager.getServerManager(2202).removeServer(serverID, account);
+            try {
+                if(account.equals(""))
+                    return;
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("command", "notify");
+                jsonObject.put("content", account + " is offline.");
+                ServerManager.getServerManager(2202).sendNotifications(jsonObject);
+                PlayerManager.getPlayerManager().setPlayerOnlineStatus(false, account);
+                return;
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

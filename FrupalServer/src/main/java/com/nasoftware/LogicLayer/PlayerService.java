@@ -1,10 +1,7 @@
 package com.nasoftware.LogicLayer;
 
 import com.google.common.hash.Hashing;
-import com.nasoftware.DataLayer.AccountDataService;
-import com.nasoftware.DataLayer.MapService;
-import com.nasoftware.DataLayer.Player;
-import com.nasoftware.DataLayer.PlayerManager;
+import com.nasoftware.DataLayer.*;
 import com.nasoftware.GameItem;
 import com.nasoftware.NetworkLayer.ServerManager;
 import org.json.JSONException;
@@ -18,7 +15,7 @@ import java.util.List;
 public class PlayerService {
     static private PlayerService playerService = null;
 
-    static public PlayerService getPlayerService() {
+    static public synchronized PlayerService getPlayerService() {
         if(playerService == null) {
             playerService = new PlayerService();
         }
@@ -33,6 +30,8 @@ public class PlayerService {
             jsonObject.put("command", "signUp");
             if(accountDataService.addAccount(account, password)) {
                 jsonObject.put("error", 0);
+                PlayerDataService playerDataService = PlayerDataService.getPlayerDataService();
+                playerDataService.setPlayerWealth(account, "1000");
             }else {
                 jsonObject.put("error","Sorry, account already exist!");
             }
@@ -69,20 +68,30 @@ public class PlayerService {
         LinkedList<Player> userList = playerManager.getPlayerList();
         try {
             jsonObject.put("command", "login");
-            Player temp = new Player();
-            temp.account = account;
-            if(userList.contains(temp)) {
-                jsonObject.put("error", 0);
-                handler.response(jsonObject);
-                move(account, "nothing");
-                return;
+            for(Player x:userList) {
+                if(x.account.equals(account) && !x.online) {
+                    jsonObject.put("error", 0);
+                    handler.response(jsonObject);
+                    move(account, "nothing");
+                    JSONObject jsonObject1 = new JSONObject();
+                    jsonObject1.put("command", "notify");
+                    jsonObject1.put("content", account + " is now online.");
+                    ServerManager.getServerManager(2022).sendNotifications(jsonObject1);
+                    playerManager.setPlayerOnlineStatus(true, account);
+                    return;
+                }else if(x.account.equals(account) && x.online) {
+                    jsonObject.put("error", "you already loged in!!!");
+                    handler.response(jsonObject);
+                    return;
+                }
+
             }
             if(userList.size() >= 4) {
                 jsonObject.put("error", "the room is full, please check later");
                 handler.response(jsonObject);
                 return;
             }
-            playerManager.addPlayer(account);
+            playerManager.addPlayer(account, PlayerDataService.getPlayerDataService().getPlayerWealth(account));
             jsonObject.put("error", 0);
             handler.response(jsonObject);
             move(account, "nothing");
@@ -107,11 +116,13 @@ public class PlayerService {
         Iterator it = players.iterator();
         int x = 0;
         int y = 0;
+        int wealth = 0;
         while (it.hasNext()) {
             Player player = (Player)it.next();
             if(player.account.equals(account)) {
                 x = player.x;
                 y = player.y;
+                wealth = player.wealth;
             }
         }
         int tempX = x;
@@ -142,33 +153,101 @@ public class PlayerService {
         switch (map[x][y].type) {
             case "wall": x = tempX; y = tempY; energyChanged -= 1; break;
             case "meadow": energyChanged -= 1; break;
-            case "water": x = tempX; y = tempY; energyChanged -= 1; break;
+            case "water":
+                if(!playerManager.checkIfUserHasItem(account, "Boat")) {
+                    x = tempX; y = tempY; energyChanged -= 1;
+                    break;
+                }else {
+                    break;
+                }
             case "forest": energyChanged -= 1; break;
             case "desert": energyChanged -= 2; break;
         }
         boolean flag = false;
         boolean hitObstacle = false;
+        int payValue = 0;
         int energyConsumed = 0;
         switch (map[x][y].name) {
-            case "Boulder": energyConsumed = -20; hitObstacle = true; break;
-            case "Tree": energyConsumed = -10; hitObstacle = true; break;
-            case "Blackberry": energyConsumed = -6; hitObstacle = true; break;
+            case "Boulder":
+                if(playerManager.checkIfUserHasItem(account, "Jack Hammer")) {
+                    energyConsumed = -2;
+                }else if(playerManager.checkIfUserHasItem(account, "Hammer and Chisel")) {
+                    energyConsumed = -10;
+                }else {
+                    energyConsumed = -20;
+                }
+                hitObstacle = true;
+                break;
+            case "Tree":
+                if(playerManager.checkIfUserHasItem(account, "Chain Saw")) {
+                    energyConsumed = -1;
+                }else if(playerManager.checkIfUserHasItem(account, "Axe")) {
+                    energyConsumed = -5;
+                }else{
+                    energyConsumed = -10;
+                }
+                hitObstacle = true;
+                break;
+            case "Blackberry":
+                if(playerManager.checkIfUserHasItem(account, "Shears")) {
+                    energyConsumed = -3;
+                }else if(playerManager.checkIfUserHasItem(account, "Pruning Saw")) {
+                    energyConsumed = -6;
+                }else {
+                    energyConsumed = -6;
+                }
+                hitObstacle = true;
+                break;
             case "Diamond": flag = true; hitObstacle = true; break;
-            case "PowerBar":
-                energyChanged += 12;
+            case "Chest1":
                 try {
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("command", "pickPowerBar");
-                    jsonObject.put("gotEnergy", 12);
+                    jsonObject.put("command", "notify");
+                    jsonObject.put("content", "Congratulations! you wealth increased 1000000");
                     serverManager.pushMessageTo(account, jsonObject);
-                    MapService.removeItem(x, y);
+                    playerManager.increasePlayerWealth(1000000, account);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                MapService.removeItem(x, y);
                 break;
+            case "Chest2":
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("command", "notify");
+                    jsonObject.put("content", "Sorry, your wealth was reset to 0!");
+                    serverManager.pushMessageTo(account, jsonObject);
+                    playerManager.resetPlayerWealth(0, account);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                MapService.removeItem(x, y);
+                break;
+            case "PowerBar":
+                if(tryPay(wealth, map[x][y].name, account, 10000)) {
+                    energyChanged += 12;
+                    MapService.removeItem(x, y);
+                }
+                break;
+            case "Binoculars": payValue = 300000; break;
+            case "Boat": payValue = 1000000; break;
+            case "Rock": payValue = 10000; break;
+            case "Jack Hammer": payValue = 400000; break;
+            case "Hammer and Chisel": payValue = 50000; break;
+            case "Chain Saw": payValue = 300000; break;
+            case "Axe": payValue = 150000; break;
+            case "Shears": payValue = 100000; break;
+            case "Pruning Saw": payValue = 50000; break;
         }
-        energyChanged += energyConsumed;
 
+        if(payValue > 0) {
+            if(tryPay(wealth, map[x][y].name, account, payValue)) {
+                playerManager.addPlayerTools(map[x][y].name, account);
+                MapService.removeItem(x, y);
+            }
+        }
+
+        energyChanged += energyConsumed;
         if(hitObstacle) {
             try {
                 JSONObject jsonObject = new JSONObject();
@@ -222,11 +301,32 @@ public class PlayerService {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
         }
 
     }
 
+    private boolean tryPay(int wealth, String name, String account, int amount) {
+        try {
+            ServerManager serverManager = ServerManager.getServerManager(2022);
+            PlayerManager playerManager = PlayerManager.getPlayerManager();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("command", "notify");
+            if(wealth >= amount) {
+                jsonObject.put("content", "Congratulations! you got a " + name + "!");
+                serverManager.pushMessageTo(account, jsonObject);
+                wealth -= amount;
+                playerManager.resetPlayerWealth(wealth, account);
+                return true;
+            }else {
+                jsonObject.put("content", "What a pity! you don't have enough whiffles.");
+                serverManager.pushMessageTo(account, jsonObject);
+                return false;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     private JSONObject generateResponsePacket() {
         JSONObject result = new JSONObject();

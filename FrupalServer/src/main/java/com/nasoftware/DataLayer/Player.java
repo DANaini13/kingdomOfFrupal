@@ -5,9 +5,10 @@ public class Player {
     public String account;
     public int x = 0;
     public int y = 0;
-    public int energy = 100;
+    public int energy = 200;
     public int wealth = 100;
     public int direction = 0; // 0 up, 1 right, 2 down, 3 left
+    public boolean online = true;
     public LinkedList<String> toolList = new LinkedList<>();
 
     @Override
