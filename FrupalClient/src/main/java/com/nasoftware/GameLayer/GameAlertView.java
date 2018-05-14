@@ -48,4 +48,8 @@ public class GameAlertView extends JPanel {
         AlertControl alertControl = new AlertControl(alertLabel, this);
         alertControl.start();
     }
+
+    public void message(String content) {
+
+    }
 }

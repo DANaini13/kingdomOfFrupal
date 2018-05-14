@@ -35,6 +35,7 @@ public class GameItem {
             case "wall": result = "o"; break;
             case "forest": result = "|"; break;
             case "meadow": result = " "; break;
+            case "bog": result = "."; break;
         }
         switch (name) {
             case "Boulder": result = "B"; break;

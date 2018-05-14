@@ -1,8 +1,12 @@
 package com.nasoftware.GameLayer;
 
+import com.nasoftware.LogicLayer.MovementService;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +17,7 @@ public class ToolsView extends JPanel {
         this.removeAll();
         JLabel titleLabel = new JLabel();
         titleLabel.setText("Your tools:");
-        titleLabel.setBounds(20, 170, 150, 30);
+        titleLabel.setBounds(20, 0, 150, 30);
         titleLabel.setHorizontalAlignment(JLabel.LEFT);
         titleLabel.setForeground(Color.BLUE);
         this.add(titleLabel);
@@ -22,17 +26,27 @@ public class ToolsView extends JPanel {
         for(String x:tools) {
             JLabel jLabel = new JLabel();
             jLabel.setText(x);
-            jLabel.setBounds(50,200 + 30*i, 150, 30);
+            jLabel.setBounds(50,30 + 30*i, 150, 30);
             jLabel.setHorizontalAlignment(JLabel.LEFT);
             this.add(jLabel);
             try {
                 BufferedImage image = this.getImage(x);
                 JLabel imageLabel = new JLabel(new ImageIcon(image));
-                imageLabel.setBounds(20, 200 + 30*i + 5, 20, 20);
+                imageLabel.setBounds(20, 30 + 30*i + 5, 20, 20);
                 this.add(imageLabel);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            JButton useButton = new JButton();
+            useButton.setBounds(150, 30 + 30*i, 30, 30);
+            useButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    MovementService.getMovementService().userTool(jLabel.getText());
+                    GameViewController.recoverListener();
+                }
+            });
+            this.add(useButton);
             ++i;
         }
         this.repaint();

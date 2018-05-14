@@ -33,7 +33,7 @@ public class GameView extends JPanel {
                 setVisiable(map, player.x + 1, player.y - 1);
                 setVisiable(map, player.x + 1, player.y + 1);
                 setVisiable(map, player.x + 1, player.y);
-                if(player.toolList.contains("Binoculars")) {
+                if(player.slightLength == 2) {
                     setVisiable(map, player.x - 2, player.y - 2);
                     setVisiable(map, player.x - 1, player.y - 2);
                     setVisiable(map, player.x, player.y - 2);
@@ -85,6 +85,7 @@ public class GameView extends JPanel {
                         case "wall": image = ImageIO.read(new File("Resources/wall.png")); break;
                         case "forest": image = ImageIO.read(new File("Resources/forest.png")); break;
                         case "meadow": image = ImageIO.read(new File("Resources/grass.png")); break;
+                        case "bog": image = ImageIO.read(new File("Resources/bog.png")); break;
                     }
                     switch (map[x][y].name) {
                         case "Boulder": image = ImageIO.read(new File("Resources/boulder.png")); break;
@@ -103,6 +104,7 @@ public class GameView extends JPanel {
                         case "Axe": image = ImageIO.read(new File("Resources/axe.png")); break;
                         case "Shears": image = ImageIO.read(new File("Resources/shears.png")); break;
                         case "Pruning Saw": image = ImageIO.read(new File("Resources/pruningSaw.png")); break;
+                        case "TClue": case "FClue": image = ImageIO.read(new File("Resources/clue.png")); break;
                     }
                     JLabel picLabel = new JLabel(new ImageIcon(image));
                     picLabel.setBounds(x*width, y*width, width, width);

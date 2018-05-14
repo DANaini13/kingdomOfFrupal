@@ -162,7 +162,7 @@ Pretty Rock
 2,3,0,4,Boulder
 2,4,0,4,None
 2,5,0,4,None
-2,6,0,4,None
+2,6,0,4,TClue
 3,1,0,4,None
 3,2,0,4,None
 3,3,0,4,None
@@ -309,3 +309,13 @@ Pretty Rock
 7,19,0,1,Axe
 18,1,0,0,Shears
 14,7,0,0,Pruning Saw
+23,23,0,5,None
+23,22,0,5,None
+23,21,0,5,None
+22,23,0,5,None
+22,22,0,5,None
+22,21,0,5,None
+21,23,0,5,None
+21,22,0,5,None
+20,23,0,5,None
+12,1,0,0,FClue

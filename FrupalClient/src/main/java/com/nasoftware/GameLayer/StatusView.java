@@ -1,7 +1,12 @@
 package com.nasoftware.GameLayer;
 
+import com.nasoftware.LogicLayer.AccountService;
+import com.nasoftware.LogicLayer.MessageService;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -9,6 +14,9 @@ public class StatusView extends JPanel {
 
     void render(LinkedList<Player> playerList) {
         this.removeAll();
+
+
+
         Iterator it = playerList.iterator();
         int i = 0;
         while (it.hasNext()) {
@@ -40,6 +48,34 @@ public class StatusView extends JPanel {
             wealthLabel.setForeground(Color.BLUE);
             wealthLabel.setText("Wealth: " + wealth);
             this.add(wealthLabel);
+
+            if(player.account.equals(AccountService.myAccount)) {
+                JButton jButton = new JButton("group");
+                jButton.setBounds(i * 120, 90, 120, 20);
+                jButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        if(!MessageView.jTextField.getText().isEmpty()) {
+                            MessageService.getMessageService().sendGroupMessage(MessageView.jTextField.getText());
+                        }
+                        GameViewController.recoverListener();
+                    }
+                });
+                this.add(jButton);
+            }else {
+                JButton jButton = new JButton("text");
+                jButton.setBounds(i * 120, 90, 120, 20);
+                jButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        if(!MessageView.jTextField.getText().isEmpty()) {
+                            MessageService.getMessageService().sendPrivateMessage(MessageView.jTextField.getText(), player.account);
+                        }
+                        GameViewController.recoverListener();
+                    }
+                });
+                this.add(jButton);
+            }
             ++i;
         }
 

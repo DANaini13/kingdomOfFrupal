@@ -31,6 +31,7 @@ public class GameItem {
             case "wall": result = "o"; break;
             case "forest": result = "|"; break;
             case "meadow": result = " "; break;
+            case "bog": result = "."; break;
         }
         switch (name) {
             case "Boulder": result += "B"; break;
@@ -49,6 +50,8 @@ public class GameItem {
             case "Axe": result += "A"; break;
             case "Shears": result += "E"; break;
             case "Pruning Saw": result += "P"; break;
+            case "TClue": result += "t"; break;
+            case "FClue": result += "f"; break;
             default: result += " ";
         }
         return result;

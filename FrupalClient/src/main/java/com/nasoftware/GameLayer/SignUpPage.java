@@ -7,8 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import static java.lang.Thread.sleep;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class SignUpPage extends JPanel {
     static private SignUpPage signUpPage = null;
@@ -22,6 +22,13 @@ public class SignUpPage extends JPanel {
             frame.setSize(300, 500);
             frame.setResizable(false);
             frame.setContentPane(signUpPage);
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent windowEvent) {
+                    super.windowClosed(windowEvent);
+                    signUpPage = null;
+                }
+            });
             signUpPage.initPage();
             frame.setVisible(true);
             frame.setTitle("Kingdom of Frupal");

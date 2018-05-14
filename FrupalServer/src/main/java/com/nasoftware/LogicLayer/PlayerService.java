@@ -1,13 +1,11 @@
 package com.nasoftware.LogicLayer;
 
-import com.google.common.hash.Hashing;
 import com.nasoftware.DataLayer.*;
 import com.nasoftware.GameItem;
 import com.nasoftware.NetworkLayer.ServerManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,91 +18,6 @@ public class PlayerService {
             playerService = new PlayerService();
         }
         return playerService;
-    }
-
-    public void signUp(String account, String password, CompletionHandler handler) {
-        password = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
-        AccountDataService accountDataService = AccountDataService.getAccountDataService();
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("command", "signUp");
-            if(accountDataService.addAccount(account, password)) {
-                jsonObject.put("error", 0);
-                PlayerDataService playerDataService = PlayerDataService.getPlayerDataService();
-                playerDataService.setPlayerWealth(account, "1000");
-            }else {
-                jsonObject.put("error","Sorry, account already exist!");
-            }
-            handler.response(jsonObject);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    public void login(String account, String password, CompletionHandler handler) {
-        password = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
-        AccountDataService accountDataService = AccountDataService.getAccountDataService();
-        int result = accountDataService.varifyAccount(account, password);
-        JSONObject jsonObject = new JSONObject();
-        try {
-            if(result == -1) {
-                jsonObject.put("command", "login");
-                jsonObject.put("error", "sorry, cannot find your account!");
-                handler.response(jsonObject);
-                return;
-            } else if(result == -2){
-                jsonObject.put("command", "login");
-                jsonObject.put("error", "sorry, your password is incorrect!");
-                handler.response(jsonObject);
-                return;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        PlayerManager playerManager = PlayerManager.getPlayerManager();
-        LinkedList<Player> userList = playerManager.getPlayerList();
-        try {
-            jsonObject.put("command", "login");
-            for(Player x:userList) {
-                if(x.account.equals(account) && !x.online) {
-                    jsonObject.put("error", 0);
-                    handler.response(jsonObject);
-                    move(account, "nothing");
-                    JSONObject jsonObject1 = new JSONObject();
-                    jsonObject1.put("command", "notify");
-                    jsonObject1.put("content", account + " is now online.");
-                    ServerManager.getServerManager(2022).sendNotifications(jsonObject1);
-                    playerManager.setPlayerOnlineStatus(true, account);
-                    return;
-                }else if(x.account.equals(account) && x.online) {
-                    jsonObject.put("error", "you already loged in!!!");
-                    handler.response(jsonObject);
-                    return;
-                }
-
-            }
-            if(userList.size() >= 4) {
-                jsonObject.put("error", "the room is full, please check later");
-                handler.response(jsonObject);
-                return;
-            }
-            playerManager.addPlayer(account, PlayerDataService.getPlayerDataService().getPlayerWealth(account));
-            jsonObject.put("error", 0);
-            handler.response(jsonObject);
-            move(account, "nothing");
-            System.out.println("new Person login!");
-            System.out.println(playerManager.getPlayerList());
-            JSONObject jsonObject1 = new JSONObject();
-            jsonObject1.put("command", "newPlayer");
-            jsonObject1.put("name", account);
-            ServerManager serverManager = ServerManager.getServerManager(2022);
-            serverManager.sendNotifications(jsonObject1);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     public void move(String account, String direction) {
@@ -154,7 +67,7 @@ public class PlayerService {
             case "wall": x = tempX; y = tempY; energyChanged -= 1; break;
             case "meadow": energyChanged -= 1; break;
             case "water":
-                if(!playerManager.checkIfUserHasItem(account, "Boat")) {
+                if(!playerManager.checkUserSwimmable(account)) {
                     x = tempX; y = tempY; energyChanged -= 1;
                     break;
                 }else {
@@ -162,6 +75,7 @@ public class PlayerService {
                 }
             case "forest": energyChanged -= 1; break;
             case "desert": energyChanged -= 2; break;
+            case "bog": energyChanged -= 3; break;
         }
         boolean flag = false;
         boolean hitObstacle = false;
@@ -169,9 +83,9 @@ public class PlayerService {
         int energyConsumed = 0;
         switch (map[x][y].name) {
             case "Boulder":
-                if(playerManager.checkIfUserHasItem(account, "Jack Hammer")) {
+                if(playerManager.checkIfUserReservedItem(account, "Jack Hammer")) {
                     energyConsumed = -2;
-                }else if(playerManager.checkIfUserHasItem(account, "Hammer and Chisel")) {
+                }else if(playerManager.checkIfUserReservedItem(account, "Hammer and Chisel")) {
                     energyConsumed = -10;
                 }else {
                     energyConsumed = -20;
@@ -179,9 +93,9 @@ public class PlayerService {
                 hitObstacle = true;
                 break;
             case "Tree":
-                if(playerManager.checkIfUserHasItem(account, "Chain Saw")) {
+                if(playerManager.checkIfUserReservedItem(account, "Chain Saw")) {
                     energyConsumed = -1;
-                }else if(playerManager.checkIfUserHasItem(account, "Axe")) {
+                }else if(playerManager.checkIfUserReservedItem(account, "Axe")) {
                     energyConsumed = -5;
                 }else{
                     energyConsumed = -10;
@@ -189,9 +103,9 @@ public class PlayerService {
                 hitObstacle = true;
                 break;
             case "Blackberry":
-                if(playerManager.checkIfUserHasItem(account, "Shears")) {
+                if(playerManager.checkIfUserReservedItem(account, "Shears")) {
                     energyConsumed = -3;
-                }else if(playerManager.checkIfUserHasItem(account, "Pruning Saw")) {
+                }else if(playerManager.checkIfUserReservedItem(account, "Pruning Saw")) {
                     energyConsumed = -6;
                 }else {
                     energyConsumed = -6;
@@ -238,6 +152,28 @@ public class PlayerService {
             case "Axe": payValue = 150000; break;
             case "Shears": payValue = 100000; break;
             case "Pruning Saw": payValue = 50000; break;
+            case "TClue":
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("command", "clue");
+                    jsonObject.put("content", "You are " + (x - 1) + " from the western border, you posses more than\n" + (wealth - 100) +
+                            "Whiffles, and the royal diamonds are located\n 4 grovnicks to the east and 18 grovnicks to the south.");
+                    serverManager.pushMessageTo(account, jsonObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "FClue":
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("command", "clue");
+                    jsonObject.put("content", "You are " + (x - 15) + " from the western border, you posses more than\n" + (wealth + 100000) +
+                            " Whiffles, and the royal diamonds are located\n 18 grovnicks to the east and 10 grovnicks to the south.");
+                    serverManager.pushMessageTo(account, jsonObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
         }
 
         if(payValue > 0) {
@@ -345,6 +281,7 @@ public class PlayerService {
                 player.put("wealth", next.wealth);
                 player.put("tools", next.toolList);
                 player.put("name", next.account);
+                player.put("slight", next.slightLength);
                 userList.add(player);
             }
             result.put("playerList", userList);
@@ -381,5 +318,22 @@ public class PlayerService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void useTool(String account, String toolName) {
+        PlayerManager playerManager = PlayerManager.getPlayerManager();
+        if(toolName.equals("Binoculars")) {
+            playerManager.setUserSlightLength(account, 2);
+            playerManager.reserveItem(account, toolName);
+            playerManager.checkIfUserReservedItem(account, toolName);
+            return;
+        }
+        if(toolName.equals("Boat")) {
+            playerManager.resetSwinable(account, true);
+            playerManager.reserveItem(account, toolName);
+            playerManager.checkIfUserReservedItem(account, toolName);
+            return;
+        }
+        playerManager.reserveItem(account, toolName);
     }
 }

@@ -24,4 +24,16 @@ public class MovementService {
             e.printStackTrace();
         }
     }
+
+    public void userTool(String toolName) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("command", "useItem");
+            jsonObject.put("itemName", toolName);
+            NetworkService networkService = NetworkService.getNetworkService();
+            networkService.PUSHRequest(jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }

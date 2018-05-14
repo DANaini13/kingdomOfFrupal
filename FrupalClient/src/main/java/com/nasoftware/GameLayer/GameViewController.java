@@ -1,6 +1,7 @@
 package com.nasoftware.GameLayer;
 import com.nasoftware.LogicLayer.AccountService;
 import com.nasoftware.LogicLayer.GameStatusService;
+import com.nasoftware.LogicLayer.MessageService;
 import com.nasoftware.LogicLayer.MovementService;
 import com.nasoftware.NetworkLayer.NetworkService;
 import org.json.JSONArray;
@@ -20,6 +21,12 @@ public class GameViewController extends JPanel implements KeyListener {
     static private GameViewController gameViewController = null;
     static private LinkedList<Player> tempList;
     static private GameItem[][] original;
+
+    static public void recoverListener() {
+        gameViewController.setFocusable(true);
+        gameViewController.requestFocus();
+    }
+
     static public GameViewController getGameViewController() {
         if(gameViewController == null) {
             gameViewController = new GameViewController();
@@ -59,9 +66,15 @@ public class GameViewController extends JPanel implements KeyListener {
             statusView.setBounds(180, 0, 500, 120);
             frame.add(statusView);
 
+            MessageView messageView = new MessageView();
+            messageView.setLayout(null);
+            messageView.setBounds(0, 0, 180, 120);
+            messageView.init();
+            frame.add(messageView);
+
             ToolsView toolsView = new ToolsView();
             toolsView.setLayout(null);
-            toolsView.setBounds(0, 0, 180, 700);
+            toolsView.setBounds(0, 180, 180, 700);
             frame.add(toolsView);
 
             /**
@@ -81,6 +94,7 @@ public class GameViewController extends JPanel implements KeyListener {
                         player.energy = Integer.parseInt(jsonObject.get("energy").toString());
                         player.wealth = Integer.parseInt(jsonObject.get("wealth").toString());
                         player.account = jsonObject.getString("name");
+                        player.slightLength = jsonObject.getInt("slight");
                         JSONArray tools = jsonObject.getJSONArray("tools");
                         for (int j=0; j<tools.length(); ++j) {
                             player.toolList.add(tools.getString(j));
@@ -201,6 +215,25 @@ public class GameViewController extends JPanel implements KeyListener {
                 try {
                     String content = response.getString("content");
                     gameAlertView.alert(content);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            // message
+            MessageService.getMessageService().setNewMessageHandler((response) -> {
+                try {
+                    messageView.showMessage(response.getString("content"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            // clue
+            MessageService.getMessageService().setClueHandler((response) -> {
+                CluePage cluePage = CluePage.getCluePage();
+                try {
+                    cluePage.setClue(response.getString("content"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

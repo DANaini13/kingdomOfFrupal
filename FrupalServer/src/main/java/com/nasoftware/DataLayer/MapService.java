@@ -90,6 +90,7 @@ public class MapService {
                     case 2: type = "water"; break;
                     case 3: type = "wall"; break;
                     case 4: type = "desert"; break;
+                    case 5: type = "bog"; break;
                 }
                 result[x][y] = new GameItem(type, name);
                 line = bufferedReader.readLine();

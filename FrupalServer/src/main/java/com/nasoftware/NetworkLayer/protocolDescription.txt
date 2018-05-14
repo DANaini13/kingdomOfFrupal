@@ -26,6 +26,21 @@ PlayOperation {
     operation : up | left | down | right
 }
 
+UseItem {
+    command : useItem
+    itemName : name
+}
+
+PrivateMessage {
+    command : privateMess
+    content : content
+}
+
+GroupMessage {
+    command : groupMess
+    to : name
+    content : content
+}
 
 
 ##########################PUSH########################
@@ -98,5 +113,15 @@ pickPowerBar {
 serverNotify {
     command: notify
     content: what ever
+}
+
+message {
+    command: message
+    content: whatEver
+}
+
+clue {
+    command: clue
+    content: whatEver
 }
 ##########################PUSH########################

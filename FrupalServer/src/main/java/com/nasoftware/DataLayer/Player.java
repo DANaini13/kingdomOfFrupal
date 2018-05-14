@@ -10,6 +10,9 @@ public class Player {
     public int direction = 0; // 0 up, 1 right, 2 down, 3 left
     public boolean online = true;
     public LinkedList<String> toolList = new LinkedList<>();
+    public String reservedTool = "";
+    public int slightLength = 1;
+    public boolean canSwim = false;
 
     @Override
     public boolean equals(Object o) {

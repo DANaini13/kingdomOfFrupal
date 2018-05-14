@@ -57,14 +57,40 @@ public class PlayerManager {
     }
 
 
-    public boolean checkIfUserHasItem(String account, String item) {
+    public boolean checkIfUserReservedItem(String account, String item) {
+        boolean result = false;
+        lock.lock();
+        for(Player x:playerList) {
+            if(account.equals(x.account)) {
+                if(x.reservedTool.equals(item)) {
+                    result = true;
+                    x.reservedTool = "";
+                    x.toolList.remove(item);
+                }
+            }
+        }
+        lock.unlock();
+        return result;
+    }
+
+    public void setUserSlightLength(String account, int length) {
+        lock.lock();
+        for(Player x:playerList) {
+            if(account.equals(x.account)) {
+                x.slightLength = length;
+            }
+        }
+        lock.unlock();
+    }
+
+    public boolean reserveItem(String account, String item) {
         boolean result = false;
         lock.lock();
         for(Player x:playerList) {
             if(account.equals(x.account)) {
                 if(x.toolList.contains(item)) {
                     result = true;
-                    break;
+                    x.reservedTool = item;
                 }
             }
         }
@@ -128,6 +154,33 @@ public class PlayerManager {
             }
         }
         lock.unlock();
+    }
+
+    public void resetSwinable(String account, boolean swimable) {
+        lock.lock();
+        Player player = new Player();
+        player.account = account;
+        Iterator it = playerList.iterator();
+        while (it.hasNext()) {
+            Player next = (Player) it.next();
+            if(next.equals(player)) {
+                next.canSwim = swimable;
+                break;
+            }
+        }
+        lock.unlock();
+    }
+
+    public boolean checkUserSwimmable(String account) {
+        boolean result = false;
+        lock.lock();
+        for(Player x:playerList) {
+            if(account.equals(x.account) && x.canSwim) {
+                result = true;
+            }
+        }
+        lock.unlock();
+        return result;
     }
 
     public void resetDirection(String account, int direction) {

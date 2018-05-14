@@ -1,5 +1,8 @@
 package com.nasoftware.NetworkLayer;
+import com.nasoftware.DataLayer.Player;
 import com.nasoftware.DataLayer.PlayerManager;
+import com.nasoftware.LogicLayer.AccountService;
+import com.nasoftware.LogicLayer.MessageService;
 import com.nasoftware.LogicLayer.PlayerService;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +38,7 @@ public class Server extends Thread {
             JSONObject args = new JSONObject(buffer);
             while (!buffer.equals("close")) {
                 dispatchCommand(new JSONObject(buffer));
+                //System.out.println("got packet: " + buffer);
                 buffer = in.readUTF();
             }
             ServerManager.getServerManager(2202).removeServer(serverID, account);
@@ -62,8 +66,8 @@ public class Server extends Thread {
             String command = args.get("command").toString();
             switch (command) {
                 case "login": {
-                    PlayerService playerService = PlayerService.getPlayerService();
-                    playerService.login(args.getString("account"), args.getString("password"), (JSONObject response) -> {
+                    AccountService accountService = AccountService.getAccountService();
+                    accountService.login(args.getString("account"), args.getString("password"), (JSONObject response) -> {
                         try {
                             if (response.getString("error").equals("0")) {
                                 this.account = args.getString("account");
@@ -78,8 +82,8 @@ public class Server extends Thread {
                     break;
                 }
                 case "signUp": {
-                    PlayerService playerService = PlayerService.getPlayerService();
-                    playerService.signUp(args.getString("account"), args.getString("password"), (JSONObject response) -> {
+                    AccountService accountService = AccountService.getAccountService();
+                    accountService.signUp(args.getString("account"), args.getString("password"), (JSONObject response) -> {
                         sendPack(response.toString());
                     });
                     break;
@@ -87,6 +91,19 @@ public class Server extends Thread {
                 case "move": {
                     PlayerService playerService = PlayerService.getPlayerService();
                     playerService.move(this.account, args.get("operation").toString());
+                    break;
+                }
+                case "useItem": {
+                    PlayerService playerService = PlayerService.getPlayerService();
+                    playerService.useTool(this.account, args.getString("itemName"));
+                    break;
+                }
+                case "groupMess": {
+                    MessageService.getMessageService().sendGroupMessage(args.getString("content"), this.account);
+                    break;
+                }
+                case "privateMess": {
+                    MessageService.getMessageService().sendPrivateMessage(args.getString("content"), this.account, args.getString("to"));
                     break;
                 }
                 default:
