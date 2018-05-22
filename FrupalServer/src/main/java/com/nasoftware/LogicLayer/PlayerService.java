@@ -30,12 +30,14 @@ public class PlayerService {
         int x = 0;
         int y = 0;
         int wealth = 0;
+        Player currentPlayer = null;
         while (it.hasNext()) {
             Player player = (Player)it.next();
             if(player.account.equals(account)) {
                 x = player.x;
                 y = player.y;
                 wealth = player.wealth;
+                currentPlayer = player;
             }
         }
         int tempX = x;
@@ -178,7 +180,9 @@ public class PlayerService {
 
         if(payValue > 0) {
             if(tryPay(wealth, map[x][y].name, account, payValue)) {
-                playerManager.addPlayerTools(map[x][y].name, account);
+                Tool tool = new Tool();
+                tool.name = map[x][y].name;
+                playerManager.addPlayerTools(tool, account);
                 MapService.removeItem(x, y);
             }
         }
@@ -197,11 +201,14 @@ public class PlayerService {
             }
         }
 
-        if(!map[x][y].visibleList.contains(account)) {
-            map[x][y].visibleList.add(account);
-        }
+
         playerManager.resetEnergy(account, energyChanged);
         playerManager.resetPosition(account, x, y);
+        for(int i = x - currentPlayer.slightLength; i <= x + currentPlayer.slightLength; ++i) {
+            for(int j = y - currentPlayer.slightLength; j <= y + currentPlayer.slightLength; ++j) {
+                MapService.changeVisibility(account, i, j);
+            }
+        }
 
         it = players.iterator();
         while (it.hasNext()) {
@@ -279,7 +286,14 @@ public class PlayerService {
                 player.put("direction", next.direction);
                 player.put("energy", next.energy);
                 player.put("wealth", next.wealth);
-                player.put("tools", next.toolList);
+                LinkedList<JSONObject> toolList = new LinkedList<>();
+                for(Tool x:next.toolList) {
+                    JSONObject tool = new JSONObject();
+                    tool.put("name", x.name);
+                    tool.put("usable", MapService.checkUsable(x.name, next.x, next.y));
+                    toolList.add(tool);
+                }
+                player.put("tools", toolList);
                 player.put("name", next.account);
                 player.put("slight", next.slightLength);
                 userList.add(player);

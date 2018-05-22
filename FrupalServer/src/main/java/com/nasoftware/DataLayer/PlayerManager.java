@@ -44,7 +44,7 @@ public class PlayerManager {
         lock.unlock();
     }
 
-    public void addPlayerTools(String tool, String account) {
+    public void addPlayerTools(Tool tool, String account) {
         lock.lock();
         for(Player x:playerList) {
             if(account.equals(x.account)) {
@@ -65,7 +65,9 @@ public class PlayerManager {
                 if(x.reservedTool.equals(item)) {
                     result = true;
                     x.reservedTool = "";
-                    x.toolList.remove(item);
+                    Tool tool = new Tool();
+                    tool.name = item;
+                    x.toolList.remove(tool);
                 }
             }
         }
@@ -88,7 +90,9 @@ public class PlayerManager {
         lock.lock();
         for(Player x:playerList) {
             if(account.equals(x.account)) {
-                if(x.toolList.contains(item)) {
+                Tool tool = new Tool();
+                tool.name = item;
+                if(x.toolList.contains(tool)) {
                     result = true;
                     x.reservedTool = item;
                 }

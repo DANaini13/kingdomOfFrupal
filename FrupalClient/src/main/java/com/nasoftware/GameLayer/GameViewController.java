@@ -96,11 +96,14 @@ public class GameViewController extends JPanel implements KeyListener {
                         player.account = jsonObject.getString("name");
                         player.slightLength = jsonObject.getInt("slight");
                         JSONArray tools = jsonObject.getJSONArray("tools");
+                        LinkedList<Boolean> usableList = new LinkedList<>();
                         for (int j=0; j<tools.length(); ++j) {
-                            player.toolList.add(tools.getString(j));
+                            JSONObject tool = tools.getJSONObject(j);
+                            player.toolList.add(tool.getString("name"));
+                            usableList.add(tool.getBoolean("usable"));
                         }
                         if(player.account.equals(AccountService.myAccount)) {
-                            toolsView.render(player.toolList);
+                            toolsView.render(player.toolList, usableList);
                         }
                         gameViewController.addPlayer(player);
                     }

@@ -21,47 +21,6 @@ public class GameView extends JPanel {
     void render(GameItem[][] map, int mapWidth, LinkedList<Player> playerList) {
         this.removeAll();
         int width = 500/mapWidth;
-        Iterator it = playerList.iterator();
-        while (it.hasNext()) {
-            Player player = (Player)it.next();
-            if(player.account.equals(AccountService.myAccount)) {
-                setVisiable(map, player.x - 1, player.y - 1);
-                setVisiable(map, player.x - 1, player.y + 1);
-                setVisiable(map, player.x - 1, player.y);
-                setVisiable(map, player.x, player.y - 1);
-                setVisiable(map, player.x, player.y + 1);
-                setVisiable(map, player.x + 1, player.y - 1);
-                setVisiable(map, player.x + 1, player.y + 1);
-                setVisiable(map, player.x + 1, player.y);
-                if(player.slightLength == 2) {
-                    setVisiable(map, player.x - 2, player.y - 2);
-                    setVisiable(map, player.x - 1, player.y - 2);
-                    setVisiable(map, player.x, player.y - 2);
-                    setVisiable(map, player.x + 2, player.y - 2);
-                    setVisiable(map, player.x + 1, player.y - 2);
-                    setVisiable(map, player.x - 2, player.y - 1);
-                    setVisiable(map, player.x - 1, player.y - 1);
-                    setVisiable(map, player.x, player.y - 1);
-                    setVisiable(map, player.x + 2, player.y - 1);
-                    setVisiable(map, player.x + 1, player.y - 1);
-                    setVisiable(map, player.x - 2, player.y);
-                    setVisiable(map, player.x - 1, player.y);
-                    setVisiable(map, player.x + 2, player.y);
-                    setVisiable(map, player.x + 1, player.y);
-                    setVisiable(map, player.x - 2, player.y + 1);
-                    setVisiable(map, player.x - 1, player.y + 1);
-                    setVisiable(map, player.x, player.y + 1);
-                    setVisiable(map, player.x + 2, player.y + 1);
-                    setVisiable(map, player.x + 1, player.y + 1);
-                    setVisiable(map, player.x - 2, player.y + 2);
-                    setVisiable(map, player.x - 1, player.y + 2);
-                    setVisiable(map, player.x, player.y + 2);
-                    setVisiable(map, player.x + 2, player.y + 2);
-                    setVisiable(map, player.x + 1, player.y + 2);
-                }
-            }
-        }
-
         for(int y = 0; y<mapWidth; ++y) {
             for(int x = 0; x<mapWidth; ++x) {
                 Iterator it1 = playerList.iterator();
@@ -78,33 +37,11 @@ public class GameView extends JPanel {
                 if(!map[x][y].visiable)
                     continue;
                 try {
-                    BufferedImage image = null;
-                    switch (map[x][y].type) {
-                        case "water": image = ImageIO.read(new File("Resources/water.png")); break;
-                        case "desert": image = ImageIO.read(new File("Resources/desert.png")); break;
-                        case "wall": image = ImageIO.read(new File("Resources/wall.png")); break;
-                        case "forest": image = ImageIO.read(new File("Resources/forest.png")); break;
-                        case "meadow": image = ImageIO.read(new File("Resources/grass.png")); break;
-                        case "bog": image = ImageIO.read(new File("Resources/bog.png")); break;
-                    }
-                    switch (map[x][y].name) {
-                        case "Boulder": image = ImageIO.read(new File("Resources/boulder.png")); break;
-                        case "Tree": image = ImageIO.read(new File("Resources/tallTree.png")); break;
-                        case "Blackberry": image = ImageIO.read(new File("Resources/tree.png")); break;
-                        case "Diamond": image = ImageIO.read(new File("Resources/diamond.png")); break;
-                        case "PowerBar": image = ImageIO.read(new File("Resources/powerBar.png")); break;
-                        case "Chest1": image = ImageIO.read(new File("Resources/chest1.png")); break;
-                        case "Chest2": image = ImageIO.read(new File("Resources/chest2.png")); break;
-                        case "Binoculars": image = ImageIO.read(new File("Resources/binoculars.png")); break;
-                        case "Boat": image = ImageIO.read(new File("Resources/boat.png")); break;
-                        case "Rock": image = ImageIO.read(new File("Resources/rock.png")); break;
-                        case "Jack Hammer": image = ImageIO.read(new File("Resources/jackHammer.png")); break;
-                        case "Hammer and Chisel": image = ImageIO.read(new File("Resources/hammerAndChisel.png")); break;
-                        case "Chain Saw": image = ImageIO.read(new File("Resources/chainSaw.png")); break;
-                        case "Axe": image = ImageIO.read(new File("Resources/axe.png")); break;
-                        case "Shears": image = ImageIO.read(new File("Resources/shears.png")); break;
-                        case "Pruning Saw": image = ImageIO.read(new File("Resources/pruningSaw.png")); break;
-                        case "TClue": case "FClue": image = ImageIO.read(new File("Resources/clue.png")); break;
+                    BufferedImage image;
+                    if(map[x][y].name.equals("None")) {
+                        image = getImageWithType(map[x][y].type);
+                    }else {
+                        image = getImageWithType(map[x][y].name);
                     }
                     JLabel picLabel = new JLabel(new ImageIcon(image));
                     picLabel.setBounds(x*width, y*width, width, width);
@@ -182,19 +119,11 @@ public class GameView extends JPanel {
                 if(!map[x][y].visiable)
                     continue;
                 try {
-                    BufferedImage image = null;
-                    switch (map[x][y].type) {
-                        case "water": image = ImageIO.read(new File("Resources/water.png")); break;
-                        case "desert": image = ImageIO.read(new File("Resources/desert.png")); break;
-                        case "wall": image = ImageIO.read(new File("Resources/wall.png")); break;
-                        case "forest": image = ImageIO.read(new File("Resources/forest.png")); break;
-                        case "meadow": image = ImageIO.read(new File("Resources/grass.png")); break;
-                    }
-                    switch (map[x][y].name) {
-                        case "Boulder": image = ImageIO.read(new File("Resources/boulder.png")); break;
-                        case "Tree": image = ImageIO.read(new File("Resources/tallTree.png")); break;
-                        case "Blackberry": image = ImageIO.read(new File("Resources/tree.png")); break;
-                        case "Diamond": image = ImageIO.read(new File("Resources/diamond.png")); break;
+                    BufferedImage image;
+                    if(map[x][y].name.equals("None")) {
+                        image = getImageWithType(map[x][y].type);
+                    }else{
+                        image = getImageWithType(map[x][y].name);
                     }
                     JLabel picLabel = new JLabel(new ImageIcon(image));
                     picLabel.setBounds(x*width, y*width, width, width);
@@ -238,5 +167,34 @@ public class GameView extends JPanel {
             e.printStackTrace();
         }
         this.repaint();
+    }
+
+    private BufferedImage getImageWithType(String name) throws IOException {
+        BufferedImage image = null;
+        switch (name) {
+            case "water": image = ImageIO.read(new File("Resources/water.png")); break;
+            case "desert": image = ImageIO.read(new File("Resources/desert.png")); break;
+            case "wall": image = ImageIO.read(new File("Resources/wall.png")); break;
+            case "forest": image = ImageIO.read(new File("Resources/forest.png")); break;
+            case "meadow": image = ImageIO.read(new File("Resources/grass.png")); break;
+            case "Boulder": image = ImageIO.read(new File("Resources/boulder.png")); break;
+            case "Tree": image = ImageIO.read(new File("Resources/tallTree.png")); break;
+            case "Blackberry": image = ImageIO.read(new File("Resources/tree.png")); break;
+            case "Diamond": image = ImageIO.read(new File("Resources/diamond.png")); break;
+            case "PowerBar": image = ImageIO.read(new File("Resources/powerBar.png")); break;
+            case "Chest1": image = ImageIO.read(new File("Resources/chest1.png")); break;
+            case "Chest2": image = ImageIO.read(new File("Resources/chest2.png")); break;
+            case "Binoculars": image = ImageIO.read(new File("Resources/binoculars.png")); break;
+            case "Boat": image = ImageIO.read(new File("Resources/boat.png")); break;
+            case "Rock": image = ImageIO.read(new File("Resources/rock.png")); break;
+            case "Jack Hammer": image = ImageIO.read(new File("Resources/jackHammer.png")); break;
+            case "Hammer and Chisel": image = ImageIO.read(new File("Resources/hammerAndChisel.png")); break;
+            case "Chain Saw": image = ImageIO.read(new File("Resources/chainSaw.png")); break;
+            case "Axe": image = ImageIO.read(new File("Resources/axe.png")); break;
+            case "Shears": image = ImageIO.read(new File("Resources/shears.png")); break;
+            case "Pruning Saw": image = ImageIO.read(new File("Resources/pruningSaw.png")); break;
+            case "TClue": case "FClue": image = ImageIO.read(new File("Resources/clue.png")); break;
+        }
+        return image;
     }
 }

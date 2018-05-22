@@ -38,7 +38,6 @@ public class Server extends Thread {
             JSONObject args = new JSONObject(buffer);
             while (!buffer.equals("close")) {
                 dispatchCommand(new JSONObject(buffer));
-                //System.out.println("got packet: " + buffer);
                 buffer = in.readUTF();
             }
             ServerManager.getServerManager(2202).removeServer(serverID, account);

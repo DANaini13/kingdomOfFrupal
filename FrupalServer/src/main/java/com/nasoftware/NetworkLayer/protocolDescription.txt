@@ -54,10 +54,10 @@ SyncStatus {
             energy: number
             wealth: number
             tools:[
-                tool1,
-                tool2,
-                tool3,
-                tool4
+                {
+                    name: tool1
+                    usable: true | false
+                }
                 ....
             ]
         },

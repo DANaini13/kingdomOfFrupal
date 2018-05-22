@@ -62,6 +62,19 @@ public class MapService {
         lock.unlock();
     }
 
+    static public void changeVisibility(String account, int x, int y) {
+        lock.lock();
+        try {
+            if (!gameItem[x][y].visibleList.contains(account)) {
+                gameItem[x][y].visibleList.add(account);
+            }
+        }catch (ArrayIndexOutOfBoundsException e) {
+
+        }finally {
+            lock.unlock();
+        }
+    }
+
     static private GameItem[][] loadMap() {
         GameItem[][] result = null;
         try {
@@ -80,11 +93,10 @@ public class MapService {
                 String[] parts = line.split(",");
                 int y = Integer.parseInt(parts[0]);
                 int x = Integer.parseInt(parts[1]);
-                int visiable = Integer.parseInt(parts[2]);
-                int terrianID = Integer.parseInt(parts[3]);
+                int terrainID = Integer.parseInt(parts[3]);
                 String name = parts[4];
                 String type = null;
-                switch (terrianID) {
+                switch (terrainID) {
                     case 0: type = "meadow"; break;
                     case 1: type = "forest"; break;
                     case 2: type = "water"; break;
@@ -115,5 +127,53 @@ public class MapService {
             e.printStackTrace();
         }
         return result;
+    }
+
+    static public boolean checkUsable(String toolName, int x, int y) {
+        if(toolName.equals("Binoculars"))
+            return true;
+        for(int i=x-1; i<=x+1; ++i) {
+            int j = y;
+                switch (toolName) {
+                    case "Jack Hammer": case "Hammer and Chisel":
+                        if(gameItem[i][j].name.equals("Boulder"))
+                            return true;
+                        break;
+                    case "Chain Saw": case "Axe":
+                        if(gameItem[i][j].name.equals("Oak Tree"))
+                            return true;
+                        break;
+                    case "Shears": case "Pruning Saw":
+                        if(gameItem[i][j].name.equals("Blackberry"))
+                            return true;
+                        break;
+                    case "Boat":
+                        if(gameItem[i][j].type.equals("water"))
+                            return true;
+                        break;
+                }
+        }
+        for(int j=y-1; j<=y+1; ++j) {
+            int i = x;
+            switch (toolName) {
+                case "Jack Hammer": case "Hammer and Chisel":
+                    if(gameItem[i][j].name.equals("Boulder"))
+                        return true;
+                    break;
+                case "Chain Saw": case "Axe":
+                    if(gameItem[i][j].name.equals("Oak Tree"))
+                        return true;
+                    break;
+                case "Shears": case "Pruning Saw":
+                    if(gameItem[i][j].name.equals("Blackberry"))
+                        return true;
+                    break;
+                case "Boat":
+                    if(gameItem[i][j].type.equals("water"))
+                        return true;
+                    break;
+                }
+        }
+        return false;
     }
 }

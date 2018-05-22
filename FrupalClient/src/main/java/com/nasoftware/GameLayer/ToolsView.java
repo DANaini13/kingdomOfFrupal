@@ -10,10 +10,11 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class ToolsView extends JPanel {
-    void render(LinkedList<String> tools) {
+    void render(LinkedList<String> tools, LinkedList<Boolean> usableList) {
         this.removeAll();
         JLabel titleLabel = new JLabel();
         titleLabel.setText("Your tools:");
@@ -23,6 +24,7 @@ public class ToolsView extends JPanel {
         this.add(titleLabel);
 
         int i=0;
+        Iterator it = usableList.iterator();
         for(String x:tools) {
             JLabel jLabel = new JLabel();
             jLabel.setText(x);
@@ -46,7 +48,8 @@ public class ToolsView extends JPanel {
                     GameViewController.recoverListener();
                 }
             });
-            this.add(useButton);
+            if((Boolean) it.next())
+                this.add(useButton);
             ++i;
         }
         this.repaint();
