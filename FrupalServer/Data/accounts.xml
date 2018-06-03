@@ -9,4 +9,7 @@
   <account accountID="test1">
     <password>a7fda0b61e2047f0f1057d1f5f064c272fd5d490961c531f4df64b0dd354683a</password>
   </account>
+  <account accountID="warren">
+    <password>b4e78f1caf9341674cb2b6c02e683b8e4b1fa5a495cc30bc7246f8658fadeffe</password>
+  </account>
 </accounts>

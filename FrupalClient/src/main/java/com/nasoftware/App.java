@@ -1,6 +1,5 @@
 package com.nasoftware;
 
-import com.nasoftware.GameLayer.GameViewController;
 import com.nasoftware.GameLayer.LoginPage;
 
 /**

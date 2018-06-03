@@ -140,7 +140,7 @@ public class MapService {
                             return true;
                         break;
                     case "Chain Saw": case "Axe":
-                        if(gameItem[i][j].name.equals("Oak Tree"))
+                        if(gameItem[i][j].name.equals("Tree"))
                             return true;
                         break;
                     case "Shears": case "Pruning Saw":
@@ -161,7 +161,7 @@ public class MapService {
                         return true;
                     break;
                 case "Chain Saw": case "Axe":
-                    if(gameItem[i][j].name.equals("Oak Tree"))
+                    if(gameItem[i][j].name.equals("Tree"))
                         return true;
                     break;
                 case "Shears": case "Pruning Saw":

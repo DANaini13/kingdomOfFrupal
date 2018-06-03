@@ -4,9 +4,12 @@
     <wealth>990000</wealth>
   </player>
   <player accountID="test0">
-    <wealth>13030000</wealth>
+    <wealth>12260000</wealth>
   </player>
   <player accountID="test1">
+    <wealth>1000</wealth>
+  </player>
+  <player accountID="warren">
     <wealth>1000</wealth>
   </player>
 </players>
