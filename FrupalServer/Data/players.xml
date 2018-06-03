@@ -3,6 +3,9 @@
   <player accountID="test2">
     <wealth>990000</wealth>
   </player>
+  <player accountID="shan27">
+    <wealth>701000</wealth>
+  </player>
   <player accountID="test0">
     <wealth>12260000</wealth>
   </player>

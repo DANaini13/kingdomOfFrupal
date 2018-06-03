@@ -1,9 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="FrupalClient:jar">
-    <output-path>$PROJECT_DIR$/classes/artifacts/FrupalClient_jar</output-path>
-    <root id="archive" name="FrupalClient.jar">
-      <element id="module-output" name="FrupalClient" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/json/json/20090211/json-20090211.jar" path-in-jar="/" />
-    </root>
-  </artifact>
-</component>

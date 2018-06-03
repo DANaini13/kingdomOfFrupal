@@ -1,5 +1,4 @@
 package com.nasoftware.NetworkLayer;
-import com.nasoftware.DataLayer.Player;
 import com.nasoftware.DataLayer.PlayerManager;
 import com.nasoftware.LogicLayer.AccountService;
 import com.nasoftware.LogicLayer.MessageService;
@@ -13,11 +12,36 @@ import java.net.Socket;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+class PacketSender extends Thread {
+    private DataOutputStream out;
+    private String packet;
+    private Lock lock;
+
+    PacketSender(DataOutputStream out, String packet, Lock lock) {
+        this.out = out;
+        this.packet = packet;
+        this.lock = lock;
+    }
+
+    public void run() {
+        try {
+            lock.lock();
+            out.writeUTF(packet);
+            lock.unlock();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+}
+
 public class Server extends Thread {
     private final Socket server;
-    private Lock lock = new ReentrantLock();
     private String account = "";
     private Integer serverID;
+    private DataOutputStream out;
+    private Lock lock;
 
     static public Server create(Socket server, int id) {
         Server newServer = new Server(server);
@@ -28,9 +52,16 @@ public class Server extends Thread {
 
     public Server(Socket server) {
         this.server = server;
+        try {
+            out = new DataOutputStream(server.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        lock = new ReentrantLock();
     }
 
     public void run() {
+
         JSONObject json = new JSONObject();
         try {
             DataInputStream in = new DataInputStream(server.getInputStream());
@@ -115,14 +146,8 @@ public class Server extends Thread {
     }
 
     public void sendPack(String pack) {
-        try {
-            lock.lock();
-            DataOutputStream out = new DataOutputStream(server.getOutputStream());
-            out.writeUTF(pack);
-            lock.unlock();
-        } catch (IOException e) {
-            return;
-        }
+        PacketSender packetSender = new PacketSender(out, pack, lock);
+        packetSender.start();
     }
 
 }

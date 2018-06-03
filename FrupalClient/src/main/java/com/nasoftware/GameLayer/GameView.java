@@ -194,6 +194,8 @@ public class GameView extends JPanel {
             case "Shears": image = ImageIO.read(new File("Resources/shears.png")); break;
             case "Pruning Saw": image = ImageIO.read(new File("Resources/pruningSaw.png")); break;
             case "TClue": case "FClue": image = ImageIO.read(new File("Resources/clue.png")); break;
+            case "bog": image = ImageIO.read(new File("Resources/bog.png")); break;
+            default:break;
         }
         return image;
     }
