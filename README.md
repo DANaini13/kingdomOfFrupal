@@ -2,8 +2,14 @@
 
 ### Environment Requirements:
 > 1. JDK 1.8 +
+> 2. Maven
 
 ### Running Instructions:
-> 1. Transfer to the ```kingdomOfFrupal/src``` drictory (with ```com``` dir inside)
-> 2. Compile the program with ```Javac com/company/Main.java```
-> 3. Rum the program with ```Java com.company.Main```
+Server:
+> 1. Transfer to the ```FrupalServer``` drictory
+> 2. Compile the program with ```mvn package```
+> 3. Rum the program with ```mvn exec:java```
+Client
+> 1. Transfer to the ```FrupalClient``` drictory
+> 2. Compile the program with ```mvn package```
+> 3. Rum the program with ```mvn exec:java```
