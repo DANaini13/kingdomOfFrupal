@@ -53,7 +53,7 @@ public class SocketService {
 
     SocketService() {
         try {
-            Socket socket = new Socket("localhost", 2202);
+            Socket socket = new Socket("198.74.50.192", 2202);
             System.out.println("long connection built!");
             out = new DataOutputStream(socket.getOutputStream());
             in = new DataInputStream(socket.getInputStream());

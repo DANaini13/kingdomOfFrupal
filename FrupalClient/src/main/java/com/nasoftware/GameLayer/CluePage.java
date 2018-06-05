@@ -1,10 +1,12 @@
 package com.nasoftware.GameLayer;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class CluePage extends JPanel {
+public class CluePage extends JPanel implements KeyListener {
     static private CluePage cluePage = null;
     static public synchronized CluePage getCluePage() {
         if(cluePage == null) {
@@ -23,6 +25,9 @@ public class CluePage extends JPanel {
                 }
             });
             cluePage.initPage();
+            cluePage.setFocusable(true);
+            cluePage.requestFocus();
+            cluePage.addKeyListener(cluePage);
             frame.setVisible(true);
             frame.setTitle("Kingdom of Frupal");
         }
@@ -49,4 +54,22 @@ public class CluePage extends JPanel {
 
     private JFrame frame;
     private JTextArea jTextArea;
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if(e.getKeyCode() == 10 || e.getKeyCode() == 88) {
+            frame.dispose();
+            cluePage = null;
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
+    }
 }
